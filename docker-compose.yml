@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  orders:
+    build:
+      context: ./ContosoOnline/
+      dockerfile: ./Orders/Dockerfile
+  postgres:
+    image: 'postgres:latest'
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: postuser
+      POSTGRES_DB: orders

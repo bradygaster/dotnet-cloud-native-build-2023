@@ -1,9 +1,17 @@
 version: "3.9"
+
 services:
+
   orders:
     build:
       context: ./ContosoOnline/
       dockerfile: ./Orders/Dockerfile
+      
+  products:
+    build:
+      context: ./ContosoOnline/
+      dockerfile: ./Products/Dockerfile
+      
   postgres:
     image: 'postgres:latest'
     ports:

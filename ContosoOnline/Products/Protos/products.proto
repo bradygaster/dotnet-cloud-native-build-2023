@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "Products";
+
+package products;
+
+service Products {
+  rpc GetProducts(google.protobuf.Empty) returns (GetProductsResponse);
+  rpc CheckProductInventory(CheckProductInventoryRequest) returns (CheckProductInventoryResponse);
+  rpc UpdateProductInventory(InventoryUpdateRequest) returns (UpdateProductInventoryResponse);
+}
+
+message GetProductsResponse {
+	repeated Product Products = 1;
+}
+
+message Product {
+	string ProductId = 1;
+	string Name = 2;
+	float Price = 3;
+	int32 ItemsInStock = 4;
+}
+
+message CheckProductInventoryRequest {
+	string ProductId = 1;
+	int32 ItemsRequested = 2;
+}
+
+message CheckProductInventoryResponse {
+	bool IsEnoughAvailable = 1;
+}
+
+message InventoryUpdateRequest {
+	string ProductId = 1;
+	int32 ItemsRequested = 2;
+}
+
+message UpdateProductInventoryResponse {
+	bool InventoryUpdated = 1;
+}

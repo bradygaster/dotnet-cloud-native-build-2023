@@ -15,6 +15,6 @@ app.MapPost("/orders", async (Order order, IOrderService service) =>
 
 app.Run();
 
-public record CartItem(string ProductId, int Quantity = 1, decimal PricePerItem = 0);
+public record CartItem(string ProductId, int Quantity = 1);
 
 public record Order(CartItem[] Cart, DateTime OrderedAt);

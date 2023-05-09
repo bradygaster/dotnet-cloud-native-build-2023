@@ -13,12 +13,13 @@
             var fakeOrders = new List<Order>();
             fakeOrders.AddRange(new Order[]
             {
-                new Order(new CartItem[] 
-                { 
-                    new CartItem("1", 2, 1.99m), 
-                    new CartItem("2", 1, 19.99m), 
-                    new CartItem("3", 4, 4.99m), 
-                    new CartItem("4", 4, 5.99m),
+                new Order(new CartItem[]
+                {
+                    new CartItem("01", 1),
+                    new CartItem("02", 2),
+                    new CartItem("03", 1),
+                    new CartItem("04", 6),
+                    new CartItem("05", 6),
                 }, DateTime.Now),
             });
             return Task.FromResult(fakeOrders.ToArray());

@@ -3,6 +3,8 @@ version: "3.9"
 services:
 
   orders:
+    ports:
+      - 5000:8080
     build:
       context: ./ContosoOnline/
       dockerfile: ./Orders/Dockerfile
@@ -20,3 +22,37 @@ services:
       POSTGRES_PASSWORD: example
       POSTGRES_USER: postuser
       POSTGRES_DB: orders
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - 9411:9411
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prom_data:/prometheus
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+    volumes:
+      - ./grafana/datasource:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboard/dashboard.yml:/etc/grafana/provisioning/dashboards/main.yaml
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+
+volumes:
+  prom_data:

@@ -2,17 +2,50 @@ version: "3.9"
 
 services:
 
+  dotnetmonitor:
+    image: mcr.microsoft.com/dotnet/nightly/monitor/base:8-preview
+    container_name: dotnetmonitor
+    environment:
+      - DOTNETMONITOR_DiagnosticPort__ConnectionMode=Listen
+      - DOTNETMONITOR_Storage__DefaultSharedPath=/tmp
+      - DOTNETMONITOR_Urls=http://localhost:52323
+      - DOTNETMONITOR_Metrics__Endpoints=http://+:52325
+    ports:
+      - 52323:52323
+    volumes:
+      - ./monitordata:/tmp
+    command: [ "collect", "--no-auth" ]
+
   orders:
+    container_name: orders
+    hostname: orders
     ports:
       - 5000:8080
     build:
       context: ./ContosoOnline/
       dockerfile: ./Orders/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_DiagnosticPorts=/tmp/dotnet-monitor.sock
+    volumes:
+      - ./monitordata:/tmp
+    depends_on:
+      - dotnetmonitor
+      - prometheus
       
   products:
+    container_name: products
+    hostname: products
     build:
       context: ./ContosoOnline/
       dockerfile: ./Products/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_DiagnosticPorts=/tmp/dotnet-monitor.sock
+    volumes:
+      - ./monitordata:/tmp
+    depends_on:
+      - dotnetmonitor
       
   postgres:
     image: 'postgres:latest'

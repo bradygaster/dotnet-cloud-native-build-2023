@@ -20,7 +20,7 @@
                     new CartItem("03", 1),
                     new CartItem("04", 6),
                     new CartItem("05", 6),
-                }, DateTime.Now),
+                }, DateTime.Now, Guid.NewGuid()),
             });
             return Task.FromResult(fakeOrders.ToArray());
         }

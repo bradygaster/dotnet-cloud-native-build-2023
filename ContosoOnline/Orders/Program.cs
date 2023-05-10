@@ -55,4 +55,4 @@ app.Run();
 
 public record CartItem(string ProductId, int Quantity = 1);
 
-public record Order(CartItem[] Cart, DateTime OrderedAt);
+public record Order(CartItem[] Cart, DateTime OrderedAt, Guid OrderId);

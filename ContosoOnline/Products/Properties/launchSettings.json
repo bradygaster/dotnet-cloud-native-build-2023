@@ -2,6 +2,8 @@
   "profiles": {
     "https": {
       "commandName": "Project",
+      "launchBrowser": false,
+      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

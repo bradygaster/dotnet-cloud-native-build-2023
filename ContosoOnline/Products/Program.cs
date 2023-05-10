@@ -5,7 +5,7 @@ using Products;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IProductService, FakeProductService>();
-//builder.Services.AddGrpc();
+builder.Services.AddGrpc();
 
 builder.Services.AddOpenTelemetry()
     .WithMetrics(builder =>
@@ -45,6 +45,6 @@ var app = builder.Build();
 app.MapGet("/", () => "Products");
 
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
-//app.MapGrpcService<ProductsGrpcService>();
+app.MapGrpcService<ProductsGrpcService>();
 
 app.Run();

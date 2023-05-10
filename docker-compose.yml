@@ -2,6 +2,40 @@ version: "3.9"
 
 services:
 
+  proxy:
+    container_name: proxy
+    hostname: proxy
+    ports:
+      - 4999:8080
+    build:
+      context: ./ContosoOnline/
+      dockerfile: ./Proxy/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ORDERS_API=http://orders:8080
+      - STORE_UI=http://store
+    depends_on:
+      - prometheus
+      - zipkin
+      - orders
+      - store
+
+  store:
+    container_name: store
+    hostname: store
+    ports:
+      - 5003:8080
+    build:
+      context: ./ContosoOnline/
+      dockerfile: ./Store/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - prometheus
+      - zipkin
+      - orders
+      - products
+
   orders:
     container_name: orders
     hostname: orders
@@ -21,7 +55,6 @@ services:
     hostname: products
     ports:
       - 5001:8080
-      - 5002:443
     build:
       context: ./ContosoOnline/
       dockerfile: ./Products/Dockerfile

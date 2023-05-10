@@ -51,6 +51,8 @@ app.MapPost("/orders", async (Order order, IOrderService service) =>
     await service.SaveOrderAsync(order)
 );
 
+app.MapGet("/", () => "Orders");
+
 app.Run();
 
 public record CartItem(string ProductId, int Quantity = 1);

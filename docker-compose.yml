@@ -111,6 +111,7 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=grafana
+      - GF_AUTH_ANONYMOUS_ENABLED=true
     volumes:
       - ./grafana/datasource:/etc/grafana/provisioning/datasources
       - ./grafana/dashboard/dashboard.yml:/etc/grafana/provisioning/dashboards/main.yaml

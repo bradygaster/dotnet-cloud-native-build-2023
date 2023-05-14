@@ -11,11 +11,12 @@ builder.Services.AddOpenTelemetry()
     {
         builder
             .AddView("request-duration", new ExplicitBucketHistogramConfiguration
-                {
-                    Boundaries = new double[] { 0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10 }
-                })
-            .AddMeter("Microsoft.AspNetCore.Hosting", "Microsoft.AspNetCore.Server.Kestrel")
-            .AddPrometheusExporter();
+            {
+                Boundaries = new double[] { 0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10 }
+            })
+            .AddAspNetCoreInstrumentation()
+            .AddPrometheusExporter()
+            .AddMeter("Microsoft.AspNetCore.Hosting", "Microsoft.AspNetCore.Server.Kestrel");
     })
     .WithTracing(tracing => {
         tracing
@@ -29,8 +30,6 @@ builder.Services.AddOpenTelemetry()
 
 var app = builder.Build();
 
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
-
 app.MapGet("/orders", async (IOrderService service) =>
     await service.GetOrdersAsync()
 );
@@ -40,6 +39,8 @@ app.MapPost("/orders", async (Order order, IOrderService service) =>
 );
 
 app.MapGet("/", () => "Orders");
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.Run();
 

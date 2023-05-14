@@ -15,4 +15,5 @@ RUN dotnet publish "Orders.csproj" -c Release -o /app/publish /p:UseAppHost=true
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+USER $APP_UID
 ENTRYPOINT ["dotnet", "Orders.dll"]

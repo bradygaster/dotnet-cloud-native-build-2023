@@ -13,7 +13,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ORDERS_API=http://orders:8080
-      - STORE_UI=http://store
+      - STORE_UI=http://store:8080
     depends_on:
       - prometheus
       - zipkin

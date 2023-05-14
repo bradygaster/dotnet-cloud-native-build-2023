@@ -1,13 +1,42 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Store.Data;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(builder =>
+    {
+        builder
+            .AddAspNetCoreInstrumentation()
+            .AddEventCountersInstrumentation(c => {
+                c.AddEventSources(
+                    "Microsoft.AspNetCore.Hosting",
+                    "Microsoft-AspNetCore-Server-Kestrel",
+                    "System.Net.Http",
+                    "System.Net.Sockets");
+            })
+            .AddView("request-duration", new ExplicitBucketHistogramConfiguration
+            {
+                Boundaries = new double[] { 0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10 }
+            })
+            .AddMeter("Microsoft.AspNetCore.Hosting", "Microsoft.AspNetCore.Server.Kestrel")
+            .AddPrometheusExporter();
+    })
+    .WithTracing(tracing => {
+        tracing
+            .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                .AddService(serviceName: "Orders", serviceVersion: "1.0"))
+            .AddAspNetCoreInstrumentation()
+            .AddZipkinExporter(zipkin =>
+            {
+                zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
+            });
+    });
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 
 var app = builder.Build();
 
@@ -24,6 +53,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

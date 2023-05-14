@@ -142,7 +142,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, sum(rate(request_duration_s_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(http_server_duration_ms_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
           "legendFormat": "p50",
           "range": true,
           "refId": "p50"
@@ -153,7 +153,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.75, sum(rate(request_duration_s_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.75, sum(rate(http_server_duration_ms_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p75",
           "range": true,
@@ -165,7 +165,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.90, sum(rate(request_duration_s_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.90, sum(rate(http_server_duration_ms_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p90",
           "range": true,
@@ -177,7 +177,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum(rate(request_duration_s_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_duration_ms_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p95",
           "range": true,
@@ -189,7 +189,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.98, sum(rate(request_duration_s_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.98, sum(rate(http_server_duration_ms_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p98",
           "range": true,
@@ -201,7 +201,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum(rate(request_duration_s_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.99, sum(rate(http_server_duration_ms_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p99",
           "range": true,
@@ -213,7 +213,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.999, sum(rate(request_duration_s_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
+          "expr": "histogram_quantile(0.999, sum(rate(http_server_duration_ms_bucket{job=\"$job\", instance=\"$instance\"}[$__rate_interval])) by (le))",
           "hide": false,
           "legendFormat": "p99.9",
           "range": true,
@@ -354,7 +354,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(request_duration_s_count{job=\"$job\", instance=\"$instance\", status_code=~\"4..|5..\"}[$__rate_interval]) or vector(0)) / sum(rate(request_duration_s_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval]))",
+          "expr": "sum(rate(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\", status_code=~\"4..|5..\"}[$__rate_interval]) or vector(0)) / sum(rate(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval]))",
           "legendFormat": "All",
           "range": true,
           "refId": "All"
@@ -365,7 +365,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(request_duration_s_count{job=\"$job\", instance=\"$instance\", status_code=~\"4..\"}[$__rate_interval]) or vector(0)) / sum(rate(request_duration_s_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval]))",
+          "expr": "sum(rate(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\", status_code=~\"4..\"}[$__rate_interval]) or vector(0)) / sum(rate(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval]))",
           "hide": false,
           "legendFormat": "4XX",
           "range": true,
@@ -377,7 +377,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(request_duration_s_count{job=\"$job\", instance=\"$instance\", status_code=~\"5..\"}[$__rate_interval]) or vector(0)) / sum(rate(request_duration_s_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval]))",
+          "expr": "sum(rate(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\", status_code=~\"5..\"}[$__rate_interval]) or vector(0)) / sum(rate(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval]))",
           "hide": false,
           "legendFormat": "5XX",
           "range": true,
@@ -564,7 +564,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(current_requests{job=\"$job\", instance=\"$instance\"})",
+          "expr": "sum(ec_System_Net_Http_current_requests{job=\"$job\", instance=\"$instance\"})",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -632,7 +632,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(request_duration_s_count{job=\"$job\", instance=\"$instance\"})",
+          "expr": "sum(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -701,7 +701,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(request_duration_s_count{job=\"$job\", instance=\"$instance\", exception_name!=\"\"})",
+          "expr": "sum(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\", exception_name!=\"\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -769,7 +769,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (scheme) (\r\n    max_over_time(request_duration_s_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval])\r\n  )",
+          "expr": "sum by (scheme) (\r\n    max_over_time(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval])\r\n  )",
           "legendFormat": "{{scheme}}",
           "range": true,
           "refId": "A"
@@ -836,7 +836,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum by (protocol) (\r\n    max_over_time(request_duration_s_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval])\r\n  )",
+          "expr": "sum by (protocol) (\r\n    max_over_time(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\"}[$__rate_interval])\r\n  )",
           "legendFormat": "{{protocol}}",
           "range": true,
           "refId": "A"
@@ -982,7 +982,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "  topk(10,\r\n  sum by (route, method, method_route) (\r\n    label_join(max_over_time(request_duration_s_count{job=\"$job\", instance=\"$instance\", route!=\"\"}[$__rate_interval]), \"method_route\", \" \", \"method\", \"route\")\r\n  ))",
+          "expr": "  topk(10,\r\n  sum by (http_route, http_method, method_route) (\r\n    label_join(max_over_time(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\", http_route!=\"\"}[$__rate_interval]), \"method_route\", \" \", \"http_method\", \"http_route\")\r\n  ))",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -1155,7 +1155,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "  topk(10,\r\n  sum by (route, method, method_route) (\r\n    label_join(max_over_time(request_duration_s_count{job=\"$job\", instance=\"$instance\", route!=\"\", exception_name!=\"\"}[$__rate_interval]), \"method_route\", \" \", \"method\", \"route\")\r\n  ))",
+          "expr": "  topk(10,\r\n  sum by (http_route, http_method, method_route) (\r\n    label_join(max_over_time(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\", http_route!=\"\", exception_name!=\"\"}[$__rate_interval]), \"method_route\", \" \", \"http_method\", \"http_route\")\r\n  ))",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -1213,7 +1213,7 @@
           "type": "prometheus",
           "uid": "Prometheus"
         },
-        "definition": "label_values(current_requests, job)",
+        "definition": "label_values(ec_System_Net_Http_current_requests, job)",
         "hide": 0,
         "includeAll": false,
         "label": "Job",
@@ -1221,7 +1221,7 @@
         "name": "job",
         "options": [],
         "query": {
-          "query": "label_values(current_requests, job)",
+          "query": "label_values(ec_System_Net_Http_current_requests, job)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1235,7 +1235,7 @@
           "type": "prometheus",
           "uid": "Prometheus"
         },
-        "definition": "label_values(current_requests{job=~\"$job\"}, instance)",
+        "definition": "label_values(ec_System_Net_Http_current_requests{job=~\"$job\"}, instance)",
         "hide": 0,
         "includeAll": false,
         "label": "Instance",
@@ -1243,7 +1243,7 @@
         "name": "instance",
         "options": [],
         "query": {
-          "query": "label_values(current_requests{job=~\"$job\"}, instance)",
+          "query": "label_values(ec_System_Net_Http_current_requests{job=~\"$job\"}, instance)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,

@@ -63,6 +63,18 @@ services:
     depends_on:
       - prometheus
       - zipkin
+
+  orderprocessor:
+    container_name: orderprocessor
+    hostname: orderprocessor
+    build:
+      context: ./ContosoOnline/
+      dockerfile: ./OrderProcessor/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - products
+      - orders
       
   postgres:
     image: 'postgres:latest'

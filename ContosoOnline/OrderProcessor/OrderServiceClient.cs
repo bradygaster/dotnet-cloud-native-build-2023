@@ -1,12 +1,12 @@
 ﻿namespace OrderProcessor
 {
-    public class OrdersClient
+    public class OrderServiceClient
     {
         private readonly HttpClient _httpClient;
-        private readonly ILogger<OrdersClient> _logger;
+        private readonly ILogger<OrderServiceClient> _logger;
         private const string ORDERS_URL = "http://orders:8080/orders";
 
-        public OrdersClient(IHttpClientFactory httpClientFactory, ILogger<OrdersClient> logger)
+        public OrderServiceClient(IHttpClientFactory httpClientFactory, ILogger<OrderServiceClient> logger)
         {
             _httpClient = httpClientFactory.CreateClient("Orders");
             _logger = logger;

@@ -7,4 +7,4 @@ scrape_configs:
       - targets: ['orders:8080']
   - job_name: 'products'
     static_configs:
-      - targets: ['products:8080']
+      - targets: ['products:80']

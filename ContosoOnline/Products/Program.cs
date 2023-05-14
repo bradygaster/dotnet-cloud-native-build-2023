@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Products;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IProductService, FakeProductService>();
@@ -27,6 +29,19 @@ builder.Services.AddOpenTelemetry()
             zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
         });
     });
+
+builder.Services.Configure<KestrelServerOptions>(options =>
+{
+    options.Listen(IPAddress.Any, 80, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http1;
+    });
+
+    options.Listen(IPAddress.Any, 8080, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
+});
 
 var app = builder.Build();
 

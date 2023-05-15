@@ -1,8 +1,11 @@
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using MudBlazor.Services;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 
 var builder = WebApplication.CreateBuilder(args);
+StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
 builder.Services.AddOpenTelemetry()
     .WithMetrics(builder =>
@@ -37,6 +40,7 @@ builder.Services.AddOpenTelemetry()
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 

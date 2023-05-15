@@ -4,6 +4,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
 WORKDIR /src
 COPY ["Orders/Orders.csproj", "Orders/"]
+COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
 RUN dotnet restore "Orders/Orders.csproj"
 COPY . .
 WORKDIR "/src/Orders"

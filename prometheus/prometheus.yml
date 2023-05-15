@@ -11,3 +11,6 @@ scrape_configs:
   - job_name: 'storeux'
     static_configs:
       - targets: ['store:8080']
+  - job_name: 'proxy'
+    static_configs:
+      - targets: ['proxy:8080']

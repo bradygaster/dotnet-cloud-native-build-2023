@@ -7,6 +7,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
 WORKDIR /src
 COPY ["Products/Products.csproj", "Products/"]
+COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
 RUN dotnet restore "Products/Products.csproj"
 COPY . .
 WORKDIR "/src/Products"

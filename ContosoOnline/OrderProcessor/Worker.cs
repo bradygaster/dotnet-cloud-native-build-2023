@@ -25,7 +25,7 @@ namespace OrderProcessor
 
                 var orders = await _ordersClient.GetOrders();
 
-                foreach (var order in orders)
+                foreach (Order? order in orders)
                 {
                     bool canWeFulfillOrder = true;
 

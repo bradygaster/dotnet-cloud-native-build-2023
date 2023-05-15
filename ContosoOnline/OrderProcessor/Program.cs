@@ -17,7 +17,7 @@ IHost host = Host.CreateDefaultBuilder(args)
 
             return channel;
         });
-        
+        services.AddObservability("OrderProcessor");
         services.AddHttpClient();
         services.AddSingleton<OrderServiceClient>();
         services.AddSingleton<ProductServiceClient>();

@@ -4,6 +4,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
 WORKDIR /src
 COPY ["Proxy/Proxy.csproj", "Proxy/"]
+COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
 RUN dotnet restore "Proxy/Proxy.csproj"
 COPY . .
 WORKDIR "/src/Proxy"

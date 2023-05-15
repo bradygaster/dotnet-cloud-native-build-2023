@@ -46,9 +46,11 @@ services:
       dockerfile: ./Orders/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - POSTGRES_CONNECTION_STRING=Server=ordersdb;Port=5432;Database=orders;User Id=postuser;Password=example
     depends_on:
       - prometheus
       - zipkin
+      - ordersdb
       
   products:
     container_name: products
@@ -76,7 +78,9 @@ services:
       - products
       - orders
       
-  postgres:
+  ordersdb:
+    container_name: ordersdb
+    hostname: ordersdb
     image: 'postgres:latest'
     ports:
       - '5432:5432'
@@ -84,6 +88,8 @@ services:
       POSTGRES_PASSWORD: example
       POSTGRES_USER: postuser
       POSTGRES_DB: orders
+    volumes: 
+      - orders_data:/var/lib/postgresql/data
 
   zipkin:
     image: openzipkin/zipkin
@@ -118,3 +124,4 @@ services:
 
 volumes:
   prom_data:
+  orders_data:

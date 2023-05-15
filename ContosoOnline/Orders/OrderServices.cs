@@ -13,21 +13,24 @@
             var fakeOrders = new List<Order>();
             fakeOrders.AddRange(new Order[]
             {
-                new Order(new CartItem[]
+                new Order(DateTime.Now, Guid.NewGuid())
                 {
-                    new CartItem("01", 1),
-                    new CartItem("02", 2),
-                    new CartItem("03", 1),
-                    new CartItem("04", 6),
-                    new CartItem("05", 6),
-                }, DateTime.Now, Guid.NewGuid()),
+                    Cart = new CartItem[]
+                    {
+                        new CartItem("01", 1),
+                        new CartItem("02", 2),
+                        new CartItem("03", 1),
+                        new CartItem("04", 6),
+                        new CartItem("05", 6),
+                    }
+                },
             });
             return Task.FromResult(fakeOrders.ToArray());
         }
 
         public Task<bool> SaveOrderAsync(Order order)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(false);
         }
     }
 }

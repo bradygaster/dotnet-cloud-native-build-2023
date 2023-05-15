@@ -38,8 +38,8 @@
             {
                 product.ItemsInStock -= quantityNeeded;
                 _logger.LogInformation($"Subtracted {quantityNeeded} from {product.Name} inventory. New inventory is {product.ItemsInStock}");
-                _fakeOrders.RemoveAll(p => p.ProductId == productId);
-                _fakeOrders.Add(product);
+                _fakeOrders?.RemoveAll(p => p.ProductId == productId);
+                _fakeOrders?.Add(product);
                 return Task.FromResult(true);
             }
             else

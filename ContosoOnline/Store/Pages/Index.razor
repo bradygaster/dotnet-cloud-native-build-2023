@@ -20,7 +20,14 @@
         <MudTd>@context.Name</MudTd>
         <MudTd>@context.Price</MudTd>
         <MudTd>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">Order</MudButton>
+            @if(!_cart.Any(x => x.ProductId == context.ProductId))
+            {
+                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">Order</MudButton>
+            }
+            else
+            {
+                <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">@(_cart.First(x => x.ProductId == context.ProductId).Quantity) in cart</MudButton>
+            }
         </MudTd>
     </RowTemplate>
 </MudTable>
@@ -28,6 +35,7 @@
 @code
 {
     private List<Product> _products = new List<Product>();
+    private List<CartItem> _cart = new List<CartItem>();
     private bool _shouldRender;
 
     override protected bool ShouldRender() => _shouldRender;
@@ -49,6 +57,15 @@
 
     protected void AddToCart(Product product)
     {
-        
+        if(!_cart.Any(x => x.ProductId == product.ProductId))
+        {
+            _cart.Add(new CartItem(product.ProductId) { Quantity = 1});
+        }
+        else
+        {
+            _cart.First(x => x.ProductId == product.ProductId).Quantity++;
+        }
+
+        StateHasChanged();
     }
 }

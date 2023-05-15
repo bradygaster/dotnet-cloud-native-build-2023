@@ -5,6 +5,7 @@ using MudBlazor.Services;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Grpc.Net.Client;
 using Grpc.Core;
+using Store;
 
 var builder = WebApplication.CreateBuilder(args);
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
@@ -31,7 +32,7 @@ builder.Services.AddOpenTelemetry()
     .WithTracing(tracing => {
         tracing
             .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                .AddService(serviceName: "Orders", serviceVersion: "1.0"))
+                .AddService(serviceName: "Store UX", serviceVersion: "1.0"))
             .AddAspNetCoreInstrumentation()
             .AddZipkinExporter(zipkin =>
             {
@@ -55,7 +56,8 @@ builder.Services.AddSingleton(services =>
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
-
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton<OrderServiceClient>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -3,6 +3,8 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using MudBlazor.Services;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
+using Grpc.Net.Client;
+using Grpc.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
@@ -37,7 +39,19 @@ builder.Services.AddOpenTelemetry()
             });
     });
 
-// Add services to the container.
+builder.Services.AddSingleton(services =>
+{
+    var backendUrl = "http://products:8080";
+
+    var channel = GrpcChannel.ForAddress(backendUrl, new GrpcChannelOptions
+    {
+        Credentials = ChannelCredentials.Insecure,
+        ServiceProvider = services
+    });
+
+    return channel;
+});
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();

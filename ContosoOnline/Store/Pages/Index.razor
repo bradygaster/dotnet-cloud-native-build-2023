@@ -1,6 +1,54 @@
 ﻿@page "/"
+@using Google.Protobuf.WellKnownTypes;
+@using Grpc.Net.Client;
+@using Products;
+@inject GrpcChannel _channel;
 
 <PageTitle>Products</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">Contoso Online</MudText>
 <MudText Class="mb-8">Welcome to Contoso Online</MudText>
+<MudText Class="m-5">Below you will find all of the products currently in stock. Use the "Order" button below to add it to your cart, then click the "Submit Order" button to send the order to us to fulfill it.</MudText>
+
+<MudTable Items="_products" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" T="Product">
+    <HeaderContent>
+        <MudTh>Product</MudTh>
+        <MudTh>Price</MudTh>
+        <MudTh>Order</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.Name</MudTd>
+        <MudTd>@context.Price</MudTd>
+        <MudTd>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">Order</MudButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code
+{
+    private List<Product> _products = new List<Product>();
+    private bool _shouldRender;
+
+    override protected bool ShouldRender() => _shouldRender;
+
+    override protected async Task OnInitializedAsync()
+    {
+        var client = new Products.ProductsClient(_channel);
+        var reply = await client.GetProductsAsync(new Empty());
+        var products = reply.Products.ToList();
+        foreach (var item in products)
+        {
+            if (!_products.Any(p => p.ProductId == item.ProductId))
+            {
+                _products.Add(item);
+            }
+        }
+        _shouldRender = true;
+    }
+
+    protected void AddToCart(Product product)
+    {
+        
+    }
+}

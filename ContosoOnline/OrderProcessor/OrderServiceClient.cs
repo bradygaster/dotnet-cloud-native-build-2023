@@ -1,4 +1,6 @@
-﻿namespace OrderProcessor;
+using System.Text.Json.Serialization;
+
+namespace OrderProcessor;
 
 public class OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClient> logger)
 {
@@ -6,7 +8,7 @@ public class OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClien
     {
         logger.LogInformation("Getting orders from {Url}", httpClient.BaseAddress);
 
-        var orders = await httpClient.GetFromJsonAsync<IEnumerable<Order>>("/orders");
+        var orders = await httpClient.GetFromJsonAsync("/orders", OrderJsonContext.Default.ListOrder);
 
         logger.LogInformation("Got {Count} orders from {Url}", orders?.Count() ?? 0, httpClient.BaseAddress);
 
@@ -16,9 +18,9 @@ public class OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClien
     public async Task MarkOrderReadyForShipment(Order order)
     {
         logger.LogInformation("Marking order {OrderId} as ready for shipment", order.OrderId);
-        
-        await httpClient.PutAsJsonAsync($"/orders/{order.OrderId}", order);
-        
+
+        await httpClient.PutAsJsonAsync($"/orders/{order.OrderId}", order, OrderJsonContext.Default.Order);
+
         logger.LogInformation("Marked order {OrderId} as ready for shipment", order.OrderId);
     }
 }
@@ -26,3 +28,8 @@ public class OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClien
 public record CartItem(string ProductId, int Quantity = 1);
 
 public record Order(CartItem[] Cart, DateTime OrderedAt, Guid OrderId);
+
+[JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
+[JsonSerializable(typeof(List<Order>))]
+internal partial class OrderJsonContext : JsonSerializerContext
+{ }

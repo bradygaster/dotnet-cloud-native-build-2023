@@ -8,6 +8,23 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddObservability(this IServiceCollection services, string serviceName)
         {
+            return services.AddObservability(serviceName, (tracing) =>
+            {
+                tracing
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault()
+                        .AddService(serviceName: serviceName, serviceVersion: "1.0"))
+                    .AddAspNetCoreInstrumentation()
+                    .AddZipkinExporter(zipkin =>
+                    {
+                        zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
+                    });
+            });
+        }
+
+        public static IServiceCollection AddObservability(this IServiceCollection services, 
+            string serviceName, 
+            Action<TracerProviderBuilder>? tracerBuilderAction = null)
+        {
             services
                 .AddOpenTelemetry()
                     .WithMetrics(builder =>
@@ -31,14 +48,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     })
                     .WithTracing(tracing =>
                     {
-                        tracing
-                            .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                                .AddService(serviceName: serviceName, serviceVersion: "1.0"))
-                            .AddAspNetCoreInstrumentation()
-                            .AddZipkinExporter(zipkin =>
-                            {
-                                zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
-                            });
+                        if (tracerBuilderAction != null)
+                            tracerBuilderAction(tracing);
                     });
 
             return services;

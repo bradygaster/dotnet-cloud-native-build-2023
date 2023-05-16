@@ -4,6 +4,7 @@ namespace Orders
 {
     public class DatabaseInitializer : IHostedService
     {
+        private const string Variable = "SEED_DATABASE";
         private readonly NpgsqlDataSource _db;
         private readonly ILogger<DatabaseInitializer> _logger;
 
@@ -51,16 +52,19 @@ namespace Orders
 
             await _db.ExecuteAsync(createCarts, cancellationToken);
 
-            // random products
-            var randomProductIDs = new string[] { "01", "02", "03", "04", "05" };
-
-            // insert some random records
-            for (int i = 0; i < 10; i++)
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Variable))
+                && Environment.GetEnvironmentVariable("SEED_DATABASE").ToLowerInvariant() == "true")
             {
-                var orderId = Guid.NewGuid().ToString();
+                // random products
+                var randomProductIDs = new string[] { "01", "02", "03", "04", "05" };
 
-                // make an order
-                var insertOrderSql = $"""
+                // insert some random records
+                for (int i = 0; i < 10; i++)
+                {
+                    var orderId = Guid.NewGuid().ToString();
+
+                    // make an order
+                    var insertOrderSql = $"""
                 INSERT INTO
                     public.orders (
                         {nameof(OrderDatabaseRecord.OrderId)}, 
@@ -71,16 +75,16 @@ namespace Orders
                     ('{orderId}', CURRENT_DATE, false);
                 """;
 
-                await _db.ExecuteAsync(insertOrderSql, cancellationToken);
+                    await _db.ExecuteAsync(insertOrderSql, cancellationToken);
 
-                // add some cart items to associate with the order
-                var cart = new List<string>();
-                randomProductIDs.OrderBy(x => Guid.NewGuid()).Take(3).ToList().ForEach(x => cart.Add(x));
+                    // add some cart items to associate with the order
+                    var cart = new List<string>();
+                    randomProductIDs.OrderBy(x => Guid.NewGuid()).Take(3).ToList().ForEach(x => cart.Add(x));
 
-                foreach (var cartItem in cart)
-                {
-                    // add the line item for the order
-                    var insertCartItemSql = $"""
+                    foreach (var cartItem in cart)
+                    {
+                        // add the line item for the order
+                        var insertCartItemSql = $"""
                     INSERT INTO
                         public.carts (
                             {nameof(CartItemDatabaseRecord.OrderId)},
@@ -91,7 +95,8 @@ namespace Orders
                         ('{orderId}', '{cartItem}', {Random.Shared.Next(1, 10)})
                     """;
 
-                    await _db.ExecuteAsync(insertCartItemSql, cancellationToken);
+                        await _db.ExecuteAsync(insertCartItemSql, cancellationToken);
+                    }
                 }
             }
         }

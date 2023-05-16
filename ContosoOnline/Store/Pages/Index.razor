@@ -15,19 +15,21 @@
     <HeaderContent>
         <MudTh>Product</MudTh>
         <MudTh>Price</MudTh>
+        <MudTh>In Stock?</MudTh>
         <MudTh>Order</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd>@context.Name</MudTd>
         <MudTd>@context.Price</MudTd>
+        <MudTd>@context.ItemsInStock</MudTd>
         <MudTd>
             @if(!_cart.Any(x => x.ProductId == context.ProductId))
             {
-                <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">Order</MudButton>
+                <MudButton Style="width: 200px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">Add to Cart</MudButton>
             }
             else
             {
-                <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">@(_cart.First(x => x.ProductId == context.ProductId).Quantity) in cart</MudButton>
+                <MudButton Style="width: 200px;" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">@(_cart.First(x => x.ProductId == context.ProductId).Quantity) in cart</MudButton>
             }
         </MudTd>
     </RowTemplate>
@@ -43,13 +45,20 @@
     private List<Product> _products = new List<Product>();
     private List<CartItem> _cart = new List<CartItem>();
     private bool _shouldRender;
+    private Products.ProductsClient _productsClient;
 
     override protected bool ShouldRender() => _shouldRender;
 
     override protected async Task OnInitializedAsync()
     {
-        var client = new Products.ProductsClient(_channel);
-        var reply = await client.GetProductsAsync(new Empty());
+        _productsClient = new Products.ProductsClient(_channel);
+        await GetProducts();
+        _shouldRender = true;
+    }
+
+    protected async Task GetProducts()
+    {
+        var reply = await _productsClient.GetProductsAsync(new Empty());
         var products = reply.Products.ToList();
         foreach (var item in products)
         {
@@ -58,7 +67,6 @@
                 _products.Add(item);
             }
         }
-        _shouldRender = true;
     }
 
     protected void AddToCart(Product product)
@@ -79,6 +87,7 @@
     {
         var result = await _orderClient.SubmitNewOrder(_cart.ToArray());
         _cart.Clear();
+        await GetProducts();
         StateHasChanged();
     }
 } 

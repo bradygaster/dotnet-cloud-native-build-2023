@@ -23,6 +23,14 @@
             return orders;
         }
 
+        public async Task MarkOrderReadyForShipment(Order order)
+        {
+            _logger.LogInformation($"Marking order {order.OrderId} as ready for shipment");
+            
+            await _httpClient.PutAsJsonAsync($"{ORDERS_URL}/{order.OrderId}", order);
+            
+            _logger.LogInformation($"Marked order {order.OrderId} as ready for shipment");
+        }
     }
 
     public record CartItem(string ProductId, int Quantity = 1);

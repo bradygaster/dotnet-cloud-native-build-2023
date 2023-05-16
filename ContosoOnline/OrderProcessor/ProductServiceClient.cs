@@ -30,5 +30,18 @@ namespace OrderProcessor
 
             return result.IsEnoughAvailable;
         }
+
+        public async Task SubtractInventory(string productId, int amount)
+        {
+            _logger.LogInformation($"Updating inventory for {productId}");
+
+            var result = await _client.SubtractInventoryAsync(new Products.InventorySubtractionRequest
+            {
+                ItemsRequested = amount,
+                ProductId = productId
+            });
+
+            _logger.LogInformation($"Inventory update for {productId} complete.");
+        }
     }
 }

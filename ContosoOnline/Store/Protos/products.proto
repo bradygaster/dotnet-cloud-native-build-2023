@@ -9,7 +9,7 @@ package products;
 service Products {
   rpc GetProducts(google.protobuf.Empty) returns (GetProductsResponse);
   rpc CheckProductInventory(CheckProductInventoryRequest) returns (CheckProductInventoryResponse);
-  rpc UpdateProductInventory(InventoryUpdateRequest) returns (UpdateProductInventoryResponse);
+  rpc SubtractInventory(InventorySubtractionRequest) returns (InventorySubtractionResponse);
 }
 
 message GetProductsResponse {
@@ -32,11 +32,11 @@ message CheckProductInventoryResponse {
 	bool IsEnoughAvailable = 1;
 }
 
-message InventoryUpdateRequest {
+message InventorySubtractionRequest {
 	string ProductId = 1;
 	int32 ItemsRequested = 2;
 }
 
-message UpdateProductInventoryResponse {
+message InventorySubtractionResponse {
 	bool InventoryUpdated = 1;
 }

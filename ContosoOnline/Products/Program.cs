@@ -26,6 +26,6 @@ var app = builder.Build();
 app.MapGet("/", () => "Products");
 
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
-app.MapGrpcService<ProductsGrpcService>();
+app.MapGrpcService<ProductsGripService>();
 
 app.Run();

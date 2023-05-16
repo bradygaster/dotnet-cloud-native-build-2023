@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Npgsql;
 using Orders;
 using Systems.Collections.Generic;
@@ -22,9 +23,33 @@ app.MapGet("/orders", async (NpgsqlDataSource db) =>
     return orders;
 });
 
-app.MapPost("/orders", async (Order order) =>
+app.MapPost("/orders", async Task<Created<Order>> (Order order, NpgsqlDataSource db, CancellationToken ct) =>
 {
-    throw new NotImplementedException();
+    var createdOrder = await db.QuerySingleAsync<OrderDatabaseRecord>(
+        $"INSERT INTO orders({nameof(OrderDatabaseRecord.OrderedAt)}, {nameof(OrderDatabaseRecord.OrderId)}, {nameof(OrderDatabaseRecord.HasShipped)}) Values(CURRENT_DATE, $1, false) RETURNING *",
+        ct,
+        order.OrderId.AsTypedDbParameter());
+
+    foreach (var item in order.Cart)
+    {
+        var createdCartItem = await db.QuerySingleAsync<CartItemDatabaseRecord>(
+            $"INSERT INTO carts({nameof(CartItemDatabaseRecord.OrderId)}, {nameof(CartItemDatabaseRecord.ProductId)}, {nameof(CartItemDatabaseRecord.Quantity)}) Values($1, $2, $3) RETURNING *",
+            ct,
+            order.OrderId.AsTypedDbParameter(),
+            item.ProductId.AsTypedDbParameter(),
+            item.Quantity.AsTypedDbParameter());
+    }
+
+    return TypedResults.Created($"/orders", new Order(createdOrder.OrderedAt, createdOrder.OrderId));
+});
+
+app.MapPut("/orders/{orderId}", async Task<Results<NoContent, NotFound>> (Guid orderId, Order order, NpgsqlDataSource db) =>
+{
+    return await db.ExecuteAsync(
+        "UPDATE orders SET hasshipped = true WHERE orderid = $1",
+        orderId.AsTypedDbParameter()) == 1
+        ? TypedResults.NoContent()
+        : TypedResults.NotFound();
 });
 
 app.MapGet("/", () => "Orders");

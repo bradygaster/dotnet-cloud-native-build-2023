@@ -23,13 +23,12 @@ namespace OrderProcessor
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                using var activity = _activitySource.StartActivity("ProcessOrders");
-                
+                using var activity = _activitySource.StartActivity("order-processor.worker");
+
                 _logger.LogInformation($"Worker running at: {DateTimeOffset.Now}");
 
-                activity?.AddEvent(new ActivityEvent("Calling Orders API"));
                 var orders = await _ordersClient.GetOrders();
-                activity?.AddEvent(new ActivityEvent("Obtained open orders from Orders API"));
+                activity?.AddTag("order-count", orders?.Count ?? 0);
 
                 foreach (Order? order in orders)
                 {
@@ -37,58 +36,48 @@ namespace OrderProcessor
 
                     _logger.LogInformation($"Checking inventory for Order {order.OrderId}");
 
-                    foreach (var cartItem in order.Cart)
+                    using (var orderActivity = _activitySource.StartActivity("order-processor.process-order"))
                     {
-
-                        activity?.AddEvent(new ActivityEvent("Calling Products API to check inventory"));
-
-                        _logger.LogInformation($"Checking inventory for product id {cartItem.ProductId} in order {order.OrderId}");
-
-                        var inStock = await _productsClient.CanInventoryFulfill(cartItem.ProductId, cartItem.Quantity);
-
-                        activity?.AddEvent(new ActivityEvent("Called Products API to check inventory"));
-
-                        if (inStock)
-                        {
-                            _logger.LogInformation($"Inventory OK for product id {cartItem.ProductId} in order {order.OrderId}");
-                        }
-                        else
-                        {
-                            _logger.LogInformation($"Not enough inventory for product id {cartItem.ProductId} in order {order.OrderId}");
-
-                            canWeFulfillOrder = canWeFulfillOrder && inStock;
-                        }
-                    }
-
-                    if(canWeFulfillOrder)
-                    {
+                        orderActivity?.AddTag("order-id", order.OrderId);
+                        orderActivity?.AddTag("product-count", order.Cart.Length);  
                         foreach (var cartItem in order.Cart)
                         {
-                            _logger.LogInformation($"Removing {cartItem.Quantity} of product id {cartItem.ProductId} from inventory");
+                           _logger.LogInformation($"Checking inventory for product id {cartItem.ProductId} in order {order.OrderId}");
 
-                            activity?.AddEvent(new ActivityEvent("Calling Products API to subtract inventory"));
+                            var inStock = await _productsClient.CanInventoryFulfill(cartItem.ProductId, cartItem.Quantity);
 
-                            await _productsClient.SubtractInventory(cartItem.ProductId, cartItem.Quantity);
+                            if (inStock)
+                            {
+                                _logger.LogInformation($"Inventory OK for product id {cartItem.ProductId} in order {order.OrderId}");
+                            }
+                            else
+                            {
+                                _logger.LogInformation($"Not enough inventory for product id {cartItem.ProductId} in order {order.OrderId}");
 
-                            activity?.AddEvent(new ActivityEvent("Called Products API to subtract inventory"));
-
-                            _logger.LogInformation($"Removed {cartItem.Quantity} of product id {cartItem.ProductId} from inventory");
+                                canWeFulfillOrder = canWeFulfillOrder && inStock;
+                            }
                         }
+                        orderActivity?.SetTag("can-fulfill-order", canWeFulfillOrder);
 
-                        _logger.LogInformation($"Marking order {order.OrderId} as ready for shipment");
+                        if (canWeFulfillOrder)
+                        {
+                            foreach (var cartItem in order.Cart)
+                            {
+                                _logger.LogInformation($"Removing {cartItem.Quantity} of product id {cartItem.ProductId} from inventory");
 
-                        activity?.AddEvent(new ActivityEvent("Calling Orders API to mark order ready for shipment"));
+                                await _productsClient.SubtractInventory(cartItem.ProductId, cartItem.Quantity);
 
-                        await _ordersClient.MarkOrderReadyForShipment(order);
+                                _logger.LogInformation($"Removed {cartItem.Quantity} of product id {cartItem.ProductId} from inventory");
+                            }
 
-                        activity?.AddEvent(new ActivityEvent("Called Orders API to mark order ready for shipment"));
+                            _logger.LogInformation($"Marking order {order.OrderId} as ready for shipment");
 
-                        _logger.LogInformation($"Marked order {order.OrderId} as ready for shipment");
+                            await _ordersClient.MarkOrderReadyForShipment(order);
+
+                            _logger.LogInformation($"Marked order {order.OrderId} as ready for shipment");
+                        }
                     }
                 }
-
-                activity?.Stop();
-
                 await Task.Delay(15000, stoppingToken);
             }
         }

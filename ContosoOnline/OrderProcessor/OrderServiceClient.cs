@@ -12,13 +12,13 @@
             _logger = logger;
         }
         
-        public async Task<IEnumerable<Order>?> GetOrders()
+        public async Task<List<Order>?> GetOrders()
         {
             _logger.LogInformation($"Getting orders from {ORDERS_URL}");
             
-            var orders = await _httpClient.GetFromJsonAsync<IEnumerable<Order>>(ORDERS_URL);
+            var orders = await _httpClient.GetFromJsonAsync<List<Order>>(ORDERS_URL);
 
-            _logger.LogInformation($"Got {orders?.Count()} orders from {ORDERS_URL}");
+            _logger.LogInformation($"Got {orders?.Count} orders from {ORDERS_URL}");
 
             return orders;
         }

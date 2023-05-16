@@ -19,17 +19,18 @@ IHost host = Host.CreateDefaultBuilder(args)
 
             return channel;
         });
-        services.AddObservability("OrderProcessor", tracing =>
-        {
-            tracing
-                .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                    .AddService(serviceName: "OrderProcessor", serviceVersion: "1.0"))
-                .AddSource(nameof(Worker))
-                .AddZipkinExporter(zipkin =>
-                {
-                    zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
-                });
-        });
+        // Open Telemetry doesn't work with NativeAOT (yet)
+        //services.AddObservability("OrderProcessor", tracing =>
+        //{
+        //    tracing
+        //        .SetResourceBuilder(ResourceBuilder.CreateDefault()
+        //            .AddService(serviceName: "OrderProcessor", serviceVersion: "1.0"))
+        //        .AddSource(nameof(Worker))
+        //        .AddZipkinExporter(zipkin =>
+        //        {
+        //            zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
+        //        });
+        //});
         services.AddHttpClient();
         services.AddSingleton<OrderServiceClient>();
         services.AddSingleton<ProductServiceClient>();

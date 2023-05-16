@@ -6,6 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <PublishAot>true</PublishAot>
 	</PropertyGroup>
 
 	<ItemGroup>

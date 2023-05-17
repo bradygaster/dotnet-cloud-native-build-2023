@@ -30,12 +30,12 @@ namespace OrderProcessor
                     var orders = await _ordersClient.GetOrders();
                     activity?.AddTag("order-count", orders?.Count ?? 0);
 
-                    var orderTasks = new List<Task>();
                     foreach (Order? order in orders)
                     {
-                        orderTasks.Add(ProcessOrder(order));
+                        // Processing orders sequentially as it looks better in the traces and
+                        // solves concurrency issues with multiple orders consuming the same inventory
+                        await ProcessOrder(order);
                     }
-                    await Task.WhenAll(orderTasks);
                 }
                 await Task.Delay(15000, stoppingToken);
             }
@@ -56,6 +56,8 @@ namespace OrderProcessor
                     itemTasks.Add(validateInventory(cartItem, order));
                 }
                 await Task.WhenAll(itemTasks);
+
+                orderActivity?.AddEvent(new ActivityEvent("inventory-check-complete"));
 
                 bool canWeFulfillOrder = true;
                 itemTasks.ForEach(itemTask => canWeFulfillOrder = canWeFulfillOrder && itemTask.Result);

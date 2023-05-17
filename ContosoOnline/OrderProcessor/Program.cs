@@ -25,6 +25,8 @@ IHost host = Host.CreateDefaultBuilder(args)
                 .SetResourceBuilder(ResourceBuilder.CreateDefault()
                     .AddService(serviceName: "OrderProcessor", serviceVersion: "1.0"))
                 .AddSource(nameof(Worker))
+                .AddHttpClientInstrumentation()
+                .AddGrpcClientInstrumentation()
                 .AddZipkinExporter(zipkin =>
                 {
                     zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");

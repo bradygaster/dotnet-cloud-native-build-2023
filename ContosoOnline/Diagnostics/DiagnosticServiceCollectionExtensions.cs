@@ -14,6 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     .SetResourceBuilder(ResourceBuilder.CreateDefault()
                         .AddService(serviceName: serviceName, serviceVersion: "1.0"))
                     .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddGrpcClientInstrumentation()
                     .AddZipkinExporter(zipkin =>
                     {
                         zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");

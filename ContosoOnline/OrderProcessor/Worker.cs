@@ -43,38 +43,39 @@ namespace OrderProcessor
 
         private async Task ProcessOrder(Order order)
         {
-            using var orderActivity = _activitySource.StartActivity("order-processor.process-order");
-            _logger.LogInformation($"Checking inventory for Order {order.OrderId}");
-
-            orderActivity?.AddTag("order-id", order.OrderId);
-            orderActivity?.AddTag("product-count", order.Cart.Length);
-
-            var itemTasks = new List<Task<bool>>();
-            foreach (var cartItem in order.Cart)
+            using (var orderActivity = _activitySource.StartActivity("order-processor.process-order"))
             {
-                itemTasks.Add(validateInventory(cartItem, order));
-            }
-            await Task.WhenAll(itemTasks);
+                _logger.LogInformation($"Checking inventory for Order {order.OrderId}");
 
-            bool canWeFulfillOrder = true;
-            itemTasks.ForEach(itemTask => canWeFulfillOrder = canWeFulfillOrder && itemTask.Result);
+                orderActivity?.AddTag("order-id", order.OrderId);
+                orderActivity?.AddTag("product-count", order.Cart.Length);
 
-            orderActivity?.SetTag("can-fulfill-order", canWeFulfillOrder);
-
-            if (canWeFulfillOrder)
-            {
-                var invTasks = new List<Task>();
+                var itemTasks = new List<Task<bool>>();
                 foreach (var cartItem in order.Cart)
                 {
-                    invTasks.Add(updateInventory(cartItem));
+                    itemTasks.Add(validateInventory(cartItem, order));
                 }
+                await Task.WhenAll(itemTasks);
 
-                _logger.LogInformation($"Marking order {order.OrderId} as ready for shipment");
-                invTasks.Add(_ordersClient.MarkOrderReadyForShipment(order));
-                await Task.WhenAll(invTasks);
-                _logger.LogInformation($"Marked order {order.OrderId} as ready for shipment");
+                bool canWeFulfillOrder = true;
+                itemTasks.ForEach(itemTask => canWeFulfillOrder = canWeFulfillOrder && itemTask.Result);
+
+                orderActivity?.SetTag("can-fulfill-order", canWeFulfillOrder);
+
+                if (canWeFulfillOrder)
+                {
+                    var invTasks = new List<Task>();
+                    foreach (var cartItem in order.Cart)
+                    {
+                        invTasks.Add(updateInventory(cartItem));
+                    }
+
+                    _logger.LogInformation($"Marking order {order.OrderId} as ready for shipment");
+                    invTasks.Add(_ordersClient.MarkOrderReadyForShipment(order));
+                    await Task.WhenAll(invTasks);
+                    _logger.LogInformation($"Marked order {order.OrderId} as ready for shipment");
+                }
             }
-
         }
 
         private async Task<bool> validateInventory(CartItem cartItem, Order order)

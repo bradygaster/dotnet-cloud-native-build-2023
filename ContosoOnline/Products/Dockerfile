@@ -1,29 +1,31 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-preview AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 8080
-EXPOSE 443
+FROM mcr.microsoft.com/dotnet/sdk:8.0-preview-alpine AS build
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
+RUN apk add \
+	# Add NativeAOT pre-reqs
+	clang build-base zlib-dev \
+	# workaround so GRPC protoc works - https://github.com/grpc/grpc/blob/master/src/csharp/BUILD-INTEGRATION.md#using-grpctools-with-unsupported-architectures
+	grpc-plugins
 
-# Add NativeAOT pre-reqs
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    clang \
-    zlib1g-dev
+ENV PROTOBUF_PROTOC=/usr/bin/protoc
+ENV GRPC_PROTOC_PLUGIN=/usr/bin/grpc_csharp_plugin
 
 WORKDIR /src
 COPY ["Products/Products.csproj", "Products/"]
 COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
 RUN dotnet restore "Products/Products.csproj"
 COPY . .
-WORKDIR "/src/Products"
-RUN dotnet build "Products.csproj" -c Release -o /app/build
+WORKDIR /src/Products
+RUN dotnet publish "Products.csproj" -o /app/publish
 
-FROM build AS publish
-RUN dotnet publish "Products.csproj" -c Release -o /app/publish
+# remove the symbols so they aren't part of the published app
+RUN rm -rf /app/publish/*.dbg
 
-FROM base AS final
+FROM alpine AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+ENV ASPNETCORE_HTTP_PORTS=8080
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+EXPOSE 80
+EXPOSE 8080
+EXPOSE 443
+COPY --from=build /app/publish .
 ENTRYPOINT ["./Products"]

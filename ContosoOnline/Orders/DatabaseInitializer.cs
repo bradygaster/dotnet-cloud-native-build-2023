@@ -1,33 +1,33 @@
 ﻿using Npgsql;
 
-namespace Orders
-{
-    public class DatabaseInitializer : IHostedService
-    {
-        private const string Variable = "SEED_DATABASE";
-        private readonly NpgsqlDataSource _db;
-        private readonly ILogger<DatabaseInitializer> _logger;
+namespace Orders;
 
-        public DatabaseInitializer(NpgsqlDataSource db, ILogger<DatabaseInitializer> logger)
+public class DatabaseInitializer : IHostedService
+{
+    private const string Variable = "SEED_DATABASE";
+    private readonly NpgsqlDataSource _db;
+    private readonly ILogger<DatabaseInitializer> _logger;
+
+    public DatabaseInitializer(NpgsqlDataSource db, ILogger<DatabaseInitializer> logger)
+    {
+        _db = db;
+        _logger = logger;
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken) => await Initialize(cancellationToken);
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    private async Task Initialize(CancellationToken cancellationToken = default)
+    {
+        // NOTE: Npgsql removes the password from the connection string
+        if (_logger.IsEnabled(LogLevel.Information))
         {
-            _db = db;
-            _logger = logger;
+            _logger.LogInformation("Ensuring database exists and is up to date");
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken) => await Initialize(cancellationToken);
-
-        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-
-        private async Task Initialize(CancellationToken cancellationToken = default)
-        {
-            // NOTE: Npgsql removes the password from the connection string
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Ensuring database exists and is up to date");
-            }
-
-            // create the orders and cart tables
-            var create = $"""
+        // create the orders and cart tables
+        var create = $"""
                 CREATE TABLE IF NOT EXISTS public.orders
                 (
                     {nameof(OrderDatabaseRecord.OrderId)} uuid PRIMARY KEY,
@@ -37,9 +37,9 @@ namespace Orders
                 DELETE FROM public.orders;
                 """;
 
-            await _db.ExecuteAsync(create, cancellationToken);
+        await _db.ExecuteAsync(create, cancellationToken);
 
-            var createCarts = $"""
+        var createCarts = $"""
                 CREATE TABLE IF NOT EXISTS public.carts
                 (
                     {nameof(CartItemDatabaseRecord.CartItemId)} SERIAL PRIMARY KEY,
@@ -50,21 +50,21 @@ namespace Orders
                 DELETE FROM public.carts;
                 """;
 
-            await _db.ExecuteAsync(createCarts, cancellationToken);
+        await _db.ExecuteAsync(createCarts, cancellationToken);
 
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Variable))
-                && Environment.GetEnvironmentVariable("SEED_DATABASE").ToLowerInvariant() == "true")
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Variable))
+            && Environment.GetEnvironmentVariable("SEED_DATABASE").ToLowerInvariant() == "true")
+        {
+            // random products
+            var randomProductIDs = new string[] { "01", "02", "03", "04", "05" };
+
+            // insert some random records
+            for (int i = 0; i < 10; i++)
             {
-                // random products
-                var randomProductIDs = new string[] { "01", "02", "03", "04", "05" };
+                var orderId = Guid.NewGuid().ToString();
 
-                // insert some random records
-                for (int i = 0; i < 10; i++)
-                {
-                    var orderId = Guid.NewGuid().ToString();
-
-                    // make an order
-                    var insertOrderSql = $"""
+                // make an order
+                var insertOrderSql = $"""
                 INSERT INTO
                     public.orders (
                         {nameof(OrderDatabaseRecord.OrderId)}, 
@@ -75,16 +75,16 @@ namespace Orders
                     ('{orderId}', CURRENT_DATE, false);
                 """;
 
-                    await _db.ExecuteAsync(insertOrderSql, cancellationToken);
+                await _db.ExecuteAsync(insertOrderSql, cancellationToken);
 
-                    // add some cart items to associate with the order
-                    var cart = new List<string>();
-                    randomProductIDs.OrderBy(x => Guid.NewGuid()).Take(3).ToList().ForEach(x => cart.Add(x));
+                // add some cart items to associate with the order
+                var cart = new List<string>();
+                randomProductIDs.OrderBy(x => Guid.NewGuid()).Take(3).ToList().ForEach(x => cart.Add(x));
 
-                    foreach (var cartItem in cart)
-                    {
-                        // add the line item for the order
-                        var insertCartItemSql = $"""
+                foreach (var cartItem in cart)
+                {
+                    // add the line item for the order
+                    var insertCartItemSql = $"""
                     INSERT INTO
                         public.carts (
                             {nameof(CartItemDatabaseRecord.OrderId)},
@@ -95,8 +95,7 @@ namespace Orders
                         ('{orderId}', '{cartItem}', {Random.Shared.Next(1, 10)})
                     """;
 
-                        await _db.ExecuteAsync(insertCartItemSql, cancellationToken);
-                    }
+                    await _db.ExecuteAsync(insertCartItemSql, cancellationToken);
                 }
             }
         }

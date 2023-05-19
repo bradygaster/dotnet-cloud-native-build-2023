@@ -23,7 +23,6 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
-
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

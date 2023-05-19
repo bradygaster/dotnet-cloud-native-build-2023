@@ -1,42 +1,41 @@
-﻿namespace OrderProcessor
+﻿namespace OrderProcessor;
+
+public class ProductServiceClient
 {
-    public class ProductServiceClient
+    private readonly Products.Products.ProductsClient _client;
+    private readonly ILogger<ProductServiceClient> _logger;
+
+    public ProductServiceClient(ILogger<ProductServiceClient> logger, Products.Products.ProductsClient client)
     {
-        private readonly Products.Products.ProductsClient _client;
-        private readonly ILogger<ProductServiceClient> _logger;
+        _logger = logger;
+        _client = client;
+    }
 
-        public ProductServiceClient(ILogger<ProductServiceClient> logger, Products.Products.ProductsClient client)
+    public async Task<bool> CanInventoryFulfill(string productId, int amount)
+    {
+        _logger.LogInformation("Checking inventory for {ProductId}", productId);
+
+        var result = await _client.CheckProductInventoryAsync(new Products.CheckProductInventoryRequest
         {
-            _logger = logger;
-            _client = client;
-        }
+            ItemsRequested = amount,
+            ProductId = productId
+        });
 
-        public async Task<bool> CanInventoryFulfill(string productId, int amount)
+        _logger.LogInformation("Inventory check for {ProductId} complete. Available: {IsEnoughAvailable}", productId, result.IsEnoughAvailable);
+
+        return result.IsEnoughAvailable;
+    }
+
+    public async Task SubtractInventory(string productId, int amount)
+    {
+        _logger.LogInformation("Updating inventory for {ProductId}", productId);
+
+        await _client.SubtractInventoryAsync(new Products.InventorySubtractionRequest
         {
-            _logger.LogInformation($"Checking inventory for {productId}");
+            ItemsRequested = amount,
+            ProductId = productId
+        });
 
-            var result = await _client.CheckProductInventoryAsync(new Products.CheckProductInventoryRequest
-            {
-                ItemsRequested = amount,
-                ProductId = productId
-            });
-
-            _logger.LogInformation($"Inventory check for {productId} complete. Available: {result.IsEnoughAvailable}");
-
-            return result.IsEnoughAvailable;
-        }
-
-        public async Task SubtractInventory(string productId, int amount)
-        {
-            _logger.LogInformation($"Updating inventory for {productId}");
-
-            var result = await _client.SubtractInventoryAsync(new Products.InventorySubtractionRequest
-            {
-                ItemsRequested = amount,
-                ProductId = productId
-            });
-
-            _logger.LogInformation($"Inventory update for {productId} complete.");
-        }
+        _logger.LogInformation("Inventory update for {ProductId} complete.", productId);
     }
 }

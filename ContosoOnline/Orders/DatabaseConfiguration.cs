@@ -1,26 +1,24 @@
 ﻿using Npgsql;
-using Orders;
 
-namespace Microsoft.Extensions.Hosting
+namespace Orders;
+
+internal static class DatabaseConfiguration
 {
-    internal static class DatabaseConfiguration
+    public static IServiceCollection AddDatabase(this IServiceCollection services)
     {
-        public static IServiceCollection AddDatabase(this IServiceCollection services)
+        services.AddSingleton(sp =>
         {
-            services.AddSingleton(static sp =>
-            {
-                var configuration = sp.GetRequiredService<IConfiguration>();
+            var configuration = sp.GetRequiredService<IConfiguration>();
 
-                var connectionString = configuration.GetConnectionString("OrdersDb") ?? throw new InvalidDataException("Missing connection string");
+            var connectionString = configuration.GetConnectionString("OrdersDb") ?? throw new InvalidDataException("Missing connection string");
 
-                var db = new NpgsqlSlimDataSourceBuilder(connectionString).Build();
+            return new NpgsqlSlimDataSourceBuilder(connectionString).Build();
+        });
 
-                return db;
-            });
+        services.AddHostedService<DatabaseInitializer>();
 
-            services.AddHostedService<DatabaseInitializer>();
+        services.AddSingleton<IOrdersDb, OrdersDb>();
 
-            return services;
-        }
+        return services;
     }
 }

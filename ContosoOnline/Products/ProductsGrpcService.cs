@@ -1,27 +1,25 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 
-namespace Products
+namespace Products;
+
+public class ProductsGrpcService(IProductService productService) : Products.ProductsBase
 {
-    public class ProductsGripService : Products.ProductsBase
+    public override async Task<GetProductsResponse> GetProducts(Empty request, ServerCallContext context)
     {
-        private readonly IProductService _productService;
+        var products = await productService.GetProductsAsync();
+        return new GetProductsResponse { Products = { products } };
+    }
 
-        public ProductsGripService(IProductService productService, ILogger<ProductsGripService> logger)
-        {
-            _productService = productService;
-        }
+    public override async Task<CheckProductInventoryResponse> CheckProductInventory(CheckProductInventoryRequest request, ServerCallContext context)
+    {
+        var inventory = await productService.CheckProductInventoryAsync(request.ProductId, request.ItemsRequested);
+        return new CheckProductInventoryResponse { IsEnoughAvailable = inventory };
+    }
 
-        public override async Task<GetProductsResponse> GetProducts(Empty request, ServerCallContext context)
-            => await _productService.GetProductsAsync()
-                .ContinueWith(task => new GetProductsResponse { Products = { task.Result } });
-
-        public override async Task<CheckProductInventoryResponse> CheckProductInventory(CheckProductInventoryRequest request, ServerCallContext context)
-            => await _productService.CheckProductInventoryAsync(request.ProductId, request.ItemsRequested)
-                .ContinueWith(task => new CheckProductInventoryResponse { IsEnoughAvailable = task.Result });
-
-        public override async Task<InventorySubtractionResponse> SubtractInventory(InventorySubtractionRequest request, ServerCallContext context)
-            => await _productService.SubtractInventory(request.ProductId, request.ItemsRequested)
-                .ContinueWith(task => new InventorySubtractionResponse { InventoryUpdated = task.Result });
+    public override async Task<InventorySubtractionResponse> SubtractInventory(InventorySubtractionRequest request, ServerCallContext context)
+    {
+        var result = await productService.SubtractInventory(request.ProductId, request.ItemsRequested);
+        return new InventorySubtractionResponse { InventoryUpdated = result };
     }
 }

@@ -1,102 +1,91 @@
 using System.Diagnostics;
 
-namespace OrderProcessor
+namespace OrderProcessor;
+
+public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, ProductServiceClient productsClient) 
+    : BackgroundService
 {
-    public class Worker : BackgroundService
+    static ActivitySource _activitySource = new ActivitySource(nameof(Worker));
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        private readonly ILogger<Worker> _logger;
-        private readonly OrderServiceClient _ordersClient;
-        private readonly ProductServiceClient _productsClient;
-        static ActivitySource _activitySource = new ActivitySource(nameof(Worker));
-
-        public Worker(ILogger<Worker> logger,
-            OrderServiceClient ordersClient,
-            ProductServiceClient productsClient)
+        while (!stoppingToken.IsCancellationRequested)
         {
-            _logger = logger;
-            _ordersClient = ordersClient;
-            _productsClient = productsClient;
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
+            using (var activity = _activitySource.StartActivity("order-processor.worker"))
             {
-                using (var activity = _activitySource.StartActivity("order-processor.worker"))
+                logger.LogInformation($"Worker running at: {DateTimeOffset.Now}");
+
+                var orders = await ordersClient.GetOrders();
+                activity?.AddTag("order-count", orders?.Count() ?? 0);
+
+                var orderTasks = new List<Task>();
+                foreach (Order? order in orders)
                 {
-                    _logger.LogInformation($"Worker running at: {DateTimeOffset.Now}");
-
-                    var orders = await _ordersClient.GetOrders();
-                    activity?.AddTag("order-count", orders?.Count() ?? 0);
-
-                    var orderTasks = new List<Task>();
-                    foreach (Order? order in orders)
+                    orderTasks.Add(Task.Run(async () =>
                     {
-                        orderTasks.Add(Task.Run(async () =>
+                        logger.LogInformation($"Checking inventory for Order {order.OrderId}");
+
+                        using (var orderActivity = _activitySource.StartActivity("order-processor.process-order"))
                         {
-                            _logger.LogInformation($"Checking inventory for Order {order.OrderId}");
+                            orderActivity?.AddTag("order-id", order.OrderId);
+                            orderActivity?.AddTag("product-count", order.Cart.Length);
 
-                            using (var orderActivity = _activitySource.StartActivity("order-processor.process-order"))
+                            bool canWeFulfillOrder = true;
+                            var itemTasks = new List<Task>();
+
+                            foreach (var cartItem in order.Cart)
                             {
-                                orderActivity?.AddTag("order-id", order.OrderId);
-                                orderActivity?.AddTag("product-count", order.Cart.Length);
+                                itemTasks.Add(Task.Run(async () =>
+                                {
+                                    logger.LogInformation($"Checking inventory for product id {cartItem.ProductId} in order {order.OrderId}");
 
-                                bool canWeFulfillOrder = true;
-                                var itemTasks = new List<Task>();
+                                    var inStock = await productsClient.CanInventoryFulfill(cartItem.ProductId, cartItem.Quantity);
 
+                                    if (inStock)
+                                    {
+                                        logger.LogInformation($"Inventory OK for product id {cartItem.ProductId} in order {order.OrderId}");
+                                    }
+                                    else
+                                    {
+                                        logger.LogInformation($"Not enough inventory for product id {cartItem.ProductId} in order {order.OrderId}");
+
+                                        canWeFulfillOrder = canWeFulfillOrder && inStock;
+                                    }
+                                }));
+                            }
+                            await Task.WhenAll(itemTasks);
+                            orderActivity?.SetTag("can-fulfill-order", canWeFulfillOrder);
+
+                            if (canWeFulfillOrder)
+                            {
+                                var invTasks = new List<Task>();
                                 foreach (var cartItem in order.Cart)
                                 {
-                                    itemTasks.Add(Task.Run(async () =>
+                                    invTasks.Add(Task.Run(async () =>
                                     {
-                                        _logger.LogInformation($"Checking inventory for product id {cartItem.ProductId} in order {order.OrderId}");
+                                        logger.LogInformation($"Removing {cartItem.Quantity} of product id {cartItem.ProductId} from inventory");
 
-                                        var inStock = await _productsClient.CanInventoryFulfill(cartItem.ProductId, cartItem.Quantity);
+                                        await productsClient.SubtractInventory(cartItem.ProductId, cartItem.Quantity);
 
-                                        if (inStock)
-                                        {
-                                            _logger.LogInformation($"Inventory OK for product id {cartItem.ProductId} in order {order.OrderId}");
-                                        }
-                                        else
-                                        {
-                                            _logger.LogInformation($"Not enough inventory for product id {cartItem.ProductId} in order {order.OrderId}");
-
-                                            canWeFulfillOrder = canWeFulfillOrder && inStock;
-                                        }
+                                        logger.LogInformation($"Removed {cartItem.Quantity} of product id {cartItem.ProductId} from inventory");
                                     }));
                                 }
-                                await Task.WhenAll(itemTasks);
-                                orderActivity?.SetTag("can-fulfill-order", canWeFulfillOrder);
 
-                                if (canWeFulfillOrder)
-                                {
-                                    var invTasks = new List<Task>();
-                                    foreach (var cartItem in order.Cart)
-                                    {
-                                        invTasks.Add(Task.Run(async () =>
-                                        {
-                                            _logger.LogInformation($"Removing {cartItem.Quantity} of product id {cartItem.ProductId} from inventory");
+                                logger.LogInformation($"Marking order {order.OrderId} as ready for shipment");
 
-                                            await _productsClient.SubtractInventory(cartItem.ProductId, cartItem.Quantity);
+                                invTasks.Add(ordersClient.MarkOrderReadyForShipment(order));
 
-                                            _logger.LogInformation($"Removed {cartItem.Quantity} of product id {cartItem.ProductId} from inventory");
-                                        }));
-                                    }
+                                logger.LogInformation($"Marked order {order.OrderId} as ready for shipment");
 
-                                    _logger.LogInformation($"Marking order {order.OrderId} as ready for shipment");
-
-                                    invTasks.Add(_ordersClient.MarkOrderReadyForShipment(order));
-
-                                    _logger.LogInformation($"Marked order {order.OrderId} as ready for shipment");
-
-                                    await Task.WhenAll(invTasks);
-                                }
+                                await Task.WhenAll(invTasks);
                             }
-                        }));
-                        await Task.WhenAll(orderTasks);
-                    }
+                        }
+                    }));
+
+                    await Task.WhenAll(orderTasks);
                 }
-                await Task.Delay(15000, stoppingToken);
             }
+            await Task.Delay(15000, stoppingToken);
         }
     }
 }

@@ -2,7 +2,7 @@
 @using Google.Protobuf.WellKnownTypes;
 @using Grpc.Net.Client;
 @using Products;
-@inject GrpcChannel _channel;
+@inject Products.ProductsClient _productsClient;
 @inject OrderServiceClient _orderClient;
 
 <PageTitle>Products</PageTitle>
@@ -45,13 +45,11 @@
     private List<Product> _products = new List<Product>();
     private List<CartItem> _cart = new List<CartItem>();
     private bool _shouldRender;
-    private Products.ProductsClient _productsClient;
 
     override protected bool ShouldRender() => _shouldRender;
 
     override protected async Task OnInitializedAsync()
     {
-        _productsClient = new Products.ProductsClient(_channel);
         await GetProducts();
         _shouldRender = true;
     }

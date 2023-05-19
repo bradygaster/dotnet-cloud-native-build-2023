@@ -1,5 +1,3 @@
-using Grpc.Core;
-using Grpc.Net.Client;
 using MudBlazor.Services;
 using Store;
 
@@ -7,28 +5,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddObservability("StoreUX");
 
-builder.Services.AddSingleton(services =>
+builder.Services.AddGrpcClient<Products.Products.ProductsClient>(c =>
 {
     var backendUrl = builder.Configuration["PRODUCTS_URL"] ?? throw new InvalidOperationException("PRODUCTS_URL is not set");
 
-    var channel = GrpcChannel.ForAddress(backendUrl, new GrpcChannelOptions
-    {
-        Credentials = ChannelCredentials.Insecure,
-        ServiceProvider = services
-    });
-
-    return channel;
+    c.Address = new(backendUrl);
 });
 
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
-builder.Services.AddMudServices();
 builder.Services.AddHttpClient<OrderServiceClient>(c =>
 {
     var url = builder.Configuration["ORDERS_URL"] ?? throw new InvalidOperationException("ORDERS_URL is not set");
 
     c.BaseAddress = new(url);
 });
+
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+builder.Services.AddMudServices();
+
 
 var app = builder.Build();
 

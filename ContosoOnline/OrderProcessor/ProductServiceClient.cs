@@ -1,19 +1,14 @@
-﻿using Grpc.Net.Client;
-
-namespace OrderProcessor
+﻿namespace OrderProcessor
 {
     public class ProductServiceClient
     {
         private readonly Products.Products.ProductsClient _client;
         private readonly ILogger<ProductServiceClient> _logger;
-        private readonly GrpcChannel _grpcChannel;
 
-        public ProductServiceClient(ILogger<ProductServiceClient> logger, GrpcChannel grpcChannel)
+        public ProductServiceClient(ILogger<ProductServiceClient> logger, Products.Products.ProductsClient client)
         {
             _logger = logger;
-            _grpcChannel = grpcChannel;
-
-            _client = new Products.Products.ProductsClient(_grpcChannel);
+            _client = client;
         }
 
         public async Task<bool> CanInventoryFulfill(string productId, int amount)

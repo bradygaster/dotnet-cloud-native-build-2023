@@ -9,13 +9,12 @@
         <!-- Talk to the team about this in the sync-up, it doesn't seem to work on my machine -->
         <!-- I installed Cake -->
         <!--PublishAot>true</PublishAot-->
-        <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
         <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Resilience" Version="8.0.0-alpha.1.23269.1" />
+        <PackageReference Include="Microsoft.Extensions.Resilience" Version="8.0.0-alpha.1.23269.5" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
         <PackageReference Include="Nanorm.Npgsql" Version="0.0.4" />
         <PackageReference Include="Npgsql" Version="8.0.0-preview.3" />

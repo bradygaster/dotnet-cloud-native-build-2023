@@ -6,7 +6,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>8c1fa008-f58d-4e3c-87e1-4bd2b50b97eb</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
         <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
@@ -16,7 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
-        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.0.0-alpha.1.23269.1" />
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.0.0-alpha.1.23269.5" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
         <PackageReference Include="MudBlazor" Version="6.2.3" />
     </ItemGroup>

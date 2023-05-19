@@ -10,7 +10,7 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Products");
 
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
 app.MapGrpcService<ProductsGrpcService>();
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();

@@ -10,6 +10,6 @@ builder.Services.AddReverseProxy()
 var app = builder.Build();
 
 app.MapReverseProxy();
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();

@@ -5,7 +5,7 @@ namespace Orders;
 
 public interface IOrdersDb
 {
-    public Task<List<OrderDatabaseRecord>> GetShippedOrdersAsync();
+    public Task<List<OrderDatabaseRecord>> GetUnshippedOrdersAsync();
     public Task<List<CartItemDatabaseRecord>> GetCartItemsAsync();
 
     public Task<OrderDatabaseRecord?> AddOrderAsync(Guid orderId, CancellationToken cancellationToken);
@@ -39,10 +39,10 @@ public class OrdersDb(NpgsqlDataSource db, DatabaseRetryPolicies policies) : IOr
             db.QueryAsync<CartItemDatabaseRecord>("SELECT * FROM carts").ToListAsync());
     }
 
-    public Task<List<OrderDatabaseRecord>> GetShippedOrdersAsync()
+    public Task<List<OrderDatabaseRecord>> GetUnshippedOrdersAsync()
     {
         return policies.OrderListPolicy.ExecuteAsync(() => 
-            db.QueryAsync<OrderDatabaseRecord>("SELECT * FROM orders WHERE hasshipped = true").ToListAsync());
+            db.QueryAsync<OrderDatabaseRecord>("SELECT * FROM orders WHERE hasshipped = false").ToListAsync());
     }
 
     public Task<bool> MarkOrderShippedAsync(Guid orderId)

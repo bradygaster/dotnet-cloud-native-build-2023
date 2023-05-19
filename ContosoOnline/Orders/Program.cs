@@ -7,6 +7,7 @@ builder.Services.AddDatabase();
 var app = builder.Build();
 
 app.MapGet("/", () => "Orders");
+
 app.MapOrdersApi();
 app.MapObservability();
 

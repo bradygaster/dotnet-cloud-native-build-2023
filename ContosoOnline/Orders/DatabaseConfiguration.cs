@@ -33,8 +33,8 @@ internal static class DatabaseConfiguration
     public static IResiliencePipelineBuilder<T> AddDbResiliencePolicy<T>(this IServiceCollection services, string policyName)
     {
         return services.AddResiliencePipeline<T>(policyName)
-                       .AddCircuitBreakerPolicy("db-cb")
-                       .AddRetryPolicy("db-retry");
+                       .AddRetryPolicy("db-retry")
+                       .AddCircuitBreakerPolicy("db-cb");
     }
 }
 

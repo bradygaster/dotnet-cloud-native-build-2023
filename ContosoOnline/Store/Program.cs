@@ -34,7 +34,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseRouting();
 
-app.MapPrometheusScrapingEndpoint();
+app.MapObservability();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 

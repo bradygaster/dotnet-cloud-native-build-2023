@@ -11,6 +11,6 @@ var app = builder.Build();
 app.MapGet("/", () => "Products");
 
 app.MapGrpcService<ProductsGrpcService>();
-app.MapPrometheusScrapingEndpoint();
+app.MapObservability();
 
 app.Run();

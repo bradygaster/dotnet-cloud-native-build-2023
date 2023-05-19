@@ -50,4 +50,9 @@ public static class DiagnosticServiceCollectionExtensions
 
         return services;
     }
+
+    public static void MapObservability(this IEndpointRouteBuilder routes)
+    {
+        routes.MapPrometheusScrapingEndpoint();
+    }
 }

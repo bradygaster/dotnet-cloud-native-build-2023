@@ -19,7 +19,7 @@ builder.Services.AddHttpClient<OrderServiceClient>(c =>
 
 builder.Services.AddObservability("OrderProcessor", builder.Configuration, tracing =>
 {
-    tracing.AddSource(nameof(Worker));
+    tracing.AddWorkerInstrumentation();
 });
 
 builder.Services.AddSingleton<Instrumentation>();

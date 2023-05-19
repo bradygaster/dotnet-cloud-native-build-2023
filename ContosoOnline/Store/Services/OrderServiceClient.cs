@@ -2,17 +2,6 @@
 
 public class OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClient> logger)
 {
-    public async Task<IEnumerable<Order>?> GetOrders()
-    {
-        logger.LogInformation("Getting orders from {Url}", httpClient.BaseAddress);
-        
-        var orders = await httpClient.GetFromJsonAsync<IEnumerable<Order>>("/orders");
-
-        logger.LogInformation("Got {Count} orders from {Url}", orders?.Count() ?? 0, httpClient.BaseAddress);
-
-        return orders;
-    }
-
     public async Task<bool> SubmitNewOrder(CartItem[] cart)
     {
         var orderId = Guid.NewGuid();

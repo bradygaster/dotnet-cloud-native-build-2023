@@ -2,7 +2,7 @@
 
 public class OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClient> logger)
 {
-    public async Task<IEnumerable<Order>?> GetOrders()
+    public async Task<IEnumerable<Order>> GetOrders()
     {
         logger.LogInformation("Getting orders from {Url}", httpClient.BaseAddress);
 
@@ -10,7 +10,7 @@ public class OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClien
 
         logger.LogInformation("Got {Count} orders from {Url}", orders?.Count() ?? 0, httpClient.BaseAddress);
 
-        return orders;
+        return orders ?? Enumerable.Empty<Order>();
     }
 
     public async Task MarkOrderReadyForShipment(Order order)

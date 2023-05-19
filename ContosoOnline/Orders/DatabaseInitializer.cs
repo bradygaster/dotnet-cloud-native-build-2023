@@ -53,7 +53,7 @@ public class DatabaseInitializer : IHostedService
         await _db.ExecuteAsync(createCarts, cancellationToken);
 
         if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Variable))
-            && Environment.GetEnvironmentVariable("SEED_DATABASE").ToLowerInvariant() == "true")
+            && Environment.GetEnvironmentVariable("SEED_DATABASE")?.ToLowerInvariant() == "true")
         {
             // random products
             var randomProductIDs = new string[] { "01", "02", "03", "04", "05" };

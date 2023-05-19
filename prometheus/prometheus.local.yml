@@ -7,7 +7,7 @@ scrape_configs:
       - targets: ['host.docker.internal:5000']
   - job_name: 'products'
     static_configs:
-      - targets: ['host.docker.internal:5002']
+      - targets: ['host.docker.internal:5222']
   - job_name: 'storeux'
     static_configs:
       - targets: ['host.docker.internal:5176']

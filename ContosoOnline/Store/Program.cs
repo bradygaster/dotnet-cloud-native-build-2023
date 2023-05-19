@@ -3,7 +3,7 @@ using Store;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddObservability("StoreUX");
+builder.Services.AddObservability("StoreUX", builder.Configuration);
 
 builder.Services.AddGrpcClient<Products.Products.ProductsClient>(c =>
 {

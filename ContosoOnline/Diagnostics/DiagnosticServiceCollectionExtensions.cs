@@ -7,7 +7,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class DiagnosticServiceCollectionExtensions
 {
     public static IServiceCollection AddObservability(this IServiceCollection services, 
-        string serviceName, 
+        string serviceName,
+        IConfiguration configuration,
         Action<TracerProviderBuilder>? tracerBuilderAction = null)
     {
         var resource = ResourceBuilder.CreateDefault().AddService(serviceName: serviceName, serviceVersion: "1.0");
@@ -40,7 +41,8 @@ public static class DiagnosticServiceCollectionExtensions
                            .AddAspNetCoreInstrumentation()
                            .AddZipkinExporter(zipkin =>
                            {
-                               zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
+                               var zipkinUrl = configuration["ZIPKIN_URL"] ?? "http://localhost:9411";
+                               zipkin.Endpoint = new Uri($"{zipkinUrl}/api/v2/spans");
                            });
 
                     tracerBuilderAction?.Invoke(tracing);

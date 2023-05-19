@@ -17,7 +17,7 @@ builder.Services.AddHttpClient<OrderServiceClient>(c =>
     c.BaseAddress = new(url);
 });
 
-builder.Services.AddObservability("OrderProcessor", tracing =>
+builder.Services.AddObservability("OrderProcessor", builder.Configuration, tracing =>
 {
     tracing.AddSource(nameof(Worker));
 });

@@ -19,13 +19,12 @@ public static class DiagnosticServiceCollectionExtensions
                 {
                     metrics
                         .SetResourceBuilder(resource)
+                        .AddRuntimeInstrumentation()
                         .AddAspNetCoreInstrumentation()
                         .AddHttpClientInstrumentation()
                         .AddEventCountersInstrumentation(c =>
                         {
                             c.AddEventSources(
-                                "Microsoft.AspNetCore.Hosting",
-                                "Microsoft-AspNetCore-Server-Kestrel",
                                 "System.Net.Http",
                                 "System.Net.Sockets");
                         })

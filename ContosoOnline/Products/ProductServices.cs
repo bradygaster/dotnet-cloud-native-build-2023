@@ -7,7 +7,7 @@ public interface IProductService
     public Task<bool> SubtractInventory(string productId, int quantityNeeded);
 }
 
-public class FakeProductService(Logger<FakeProductService> logger) : IProductService
+public class FakeProductService(ILogger<FakeProductService> logger) : IProductService
 {
     private List<Product> _fakeOrders = new()
     {

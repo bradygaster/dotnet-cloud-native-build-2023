@@ -30,6 +30,8 @@ services:
       dockerfile: ./Store/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - PRODUCTS_URL=http://products:8080
+      - ORDERS_URL=http://orders:8080
     depends_on:
       - prometheus
       - zipkin
@@ -46,7 +48,7 @@ services:
       dockerfile: ./Orders/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - POSTGRES_CONNECTION_STRING=Server=ordersdb;Port=5432;Database=orders;User Id=postuser;Password=example
+      - ConnectionStrings__OrdersDb=Server=ordersdb;Port=5432;Database=orders;User Id=postuser;Password=example
     depends_on:
       - prometheus
       - zipkin
@@ -74,6 +76,8 @@ services:
       dockerfile: ./OrderProcessor/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - PRODUCTS_URL=http://products:8080
+      - ORDERS_URL=http://orders:8080
     depends_on:
       - products
       - orders

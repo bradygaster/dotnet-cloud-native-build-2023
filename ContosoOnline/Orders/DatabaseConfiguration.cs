@@ -9,13 +9,17 @@ namespace Microsoft.Extensions.Hosting
         {
             services.AddSingleton(static sp =>
             {
-                var hostEnvironment = sp.GetRequiredService<IHostEnvironment>();
-                
-                var db = new NpgsqlSlimDataSourceBuilder(Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING")).Build();
+                var configuration = sp.GetRequiredService<IConfiguration>();
+
+                var connectionString = configuration.GetConnectionString("OrdersDb") ?? throw new InvalidDataException("Missing connection string");
+
+                var db = new NpgsqlSlimDataSourceBuilder(connectionString).Build();
 
                 return db;
             });
+
             services.AddHostedService<DatabaseInitializer>();
+
             return services;
         }
     }

@@ -1,4 +1,3 @@
-using Grpc.Net.Client;
 using System.Diagnostics;
 
 namespace OrderProcessor
@@ -28,7 +27,7 @@ namespace OrderProcessor
                     _logger.LogInformation($"Worker running at: {DateTimeOffset.Now}");
 
                     var orders = await _ordersClient.GetOrders();
-                    activity?.AddTag("order-count", orders?.Count ?? 0);
+                    activity?.AddTag("order-count", orders?.Count() ?? 0);
 
                     var orderTasks = new List<Task>();
                     foreach (Order? order in orders)

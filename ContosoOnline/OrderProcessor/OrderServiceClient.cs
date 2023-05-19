@@ -4,32 +4,31 @@
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger<OrderServiceClient> _logger;
-        private const string ORDERS_URL = "http://orders:8080/orders";
 
-        public OrderServiceClient(IHttpClientFactory httpClientFactory, ILogger<OrderServiceClient> logger)
+        public OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClient> logger)
         {
-            _httpClient = httpClientFactory.CreateClient("Orders");
+            _httpClient = httpClient;
             _logger = logger;
         }
-        
-        public async Task<List<Order>?> GetOrders()
-        {
-            _logger.LogInformation($"Getting orders from {ORDERS_URL}");
-            
-            var orders = await _httpClient.GetFromJsonAsync<List<Order>>(ORDERS_URL);
 
-            _logger.LogInformation($"Got {orders?.Count} orders from {ORDERS_URL}");
+        public async Task<IEnumerable<Order>?> GetOrders()
+        {
+            _logger.LogInformation("Getting orders from {Url}", _httpClient.BaseAddress);
+
+            var orders = await _httpClient.GetFromJsonAsync<IEnumerable<Order>>("/orders");
+
+            _logger.LogInformation("Got {Count} orders from {Url}", orders?.Count() ?? 0, _httpClient.BaseAddress);
 
             return orders;
         }
 
         public async Task MarkOrderReadyForShipment(Order order)
         {
-            _logger.LogInformation($"Marking order {order.OrderId} as ready for shipment");
+            _logger.LogInformation("Marking order {OrderId} as ready for shipment", order.OrderId);
             
-            await _httpClient.PutAsJsonAsync($"{ORDERS_URL}/{order.OrderId}", order);
+            await _httpClient.PutAsJsonAsync($"/orders/{order.OrderId}", order);
             
-            _logger.LogInformation($"Marked order {order.OrderId} as ready for shipment");
+            _logger.LogInformation("Marked order {OrderId} as ready for shipment", order.OrderId);
         }
     }
 

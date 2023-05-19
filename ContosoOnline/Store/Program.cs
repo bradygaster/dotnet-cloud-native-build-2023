@@ -1,17 +1,15 @@
 using Grpc.Core;
 using Grpc.Net.Client;
-using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using MudBlazor.Services;
 using Store;
 
 var builder = WebApplication.CreateBuilder(args);
-StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
 builder.Services.AddObservability("StoreUX");
 
 builder.Services.AddSingleton(services =>
 {
-    var backendUrl = "http://products:8080";
+    var backendUrl = builder.Configuration["PRODUCTS_URL"] ?? throw new InvalidOperationException("PRODUCTS_URL is not set");
 
     var channel = GrpcChannel.ForAddress(backendUrl, new GrpcChannelOptions
     {
@@ -25,8 +23,13 @@ builder.Services.AddSingleton(services =>
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
-builder.Services.AddHttpClient();
-builder.Services.AddSingleton<OrderServiceClient>();
+builder.Services.AddHttpClient<OrderServiceClient>(c =>
+{
+    var url = builder.Configuration["ORDERS_URL"] ?? throw new InvalidOperationException("ORDERS_URL is not set");
+
+    c.BaseAddress = new(url);
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

@@ -4,38 +4,44 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OrderProcessor;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
+var builder = Host.CreateApplicationBuilder(args);
+
+builder.Services.AddSingleton(services =>
+{
+    var backendUrl = builder.Configuration["PRODUCTS_URL"] ?? throw new InvalidOperationException("PRODUCTS_URL is not set");
+
+    var channel = GrpcChannel.ForAddress(backendUrl, new GrpcChannelOptions
     {
-        services.AddSingleton(services =>
-        {
-            var backendUrl = "http://products:8080";
+        Credentials = ChannelCredentials.Insecure,
+        ServiceProvider = services
+    });
 
-            var channel = GrpcChannel.ForAddress(backendUrl, new GrpcChannelOptions
-            {
-                Credentials = ChannelCredentials.Insecure,
-                ServiceProvider = services
-            });
+    return channel;
+});
 
-            return channel;
-        });
-        services.AddObservability("OrderProcessor", tracing =>
+builder.Services.AddObservability("OrderProcessor", tracing =>
+{
+    tracing
+        .SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService(serviceName: "OrderProcessor", serviceVersion: "1.0"))
+        .AddSource(nameof(Worker))
+        .AddZipkinExporter(zipkin =>
         {
-            tracing
-                .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                    .AddService(serviceName: "OrderProcessor", serviceVersion: "1.0"))
-                .AddSource(nameof(Worker))
-                .AddZipkinExporter(zipkin =>
-                {
-                    zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
-                });
+            zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
         });
-        services.AddHttpClient();
-        services.AddSingleton<OrderServiceClient>();
-        services.AddSingleton<ProductServiceClient>();
-        services.AddHostedService<Worker>();
-    })
-    .Build();
+});
+
+builder.Services.AddHttpClient<OrderServiceClient>(c =>
+{
+    var url = builder.Configuration["ORDERS_URL"] ?? throw new InvalidOperationException("ORDERS_URL is not set");
+
+    c.BaseAddress = new(url);
+});
+
+builder.Services.AddSingleton<ProductServiceClient>();
+builder.Services.AddHostedService<Worker>();
+
+var host = builder.Build();
 
 host.Run();
 

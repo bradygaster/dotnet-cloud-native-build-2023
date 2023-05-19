@@ -22,6 +22,7 @@ builder.Services.AddObservability("OrderProcessor", tracing =>
     tracing.AddSource(nameof(Worker));
 });
 
+builder.Services.AddSingleton<Instrumentation>();
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();

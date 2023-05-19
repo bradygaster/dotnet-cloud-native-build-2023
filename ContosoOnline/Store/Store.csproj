@@ -1,29 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<UserSecretsId>8c1fa008-f58d-4e3c-87e1-4bd2b50b97eb</UserSecretsId>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>8c1fa008-f58d-4e3c-87e1-4bd2b50b97eb</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <LangVersion>preview</LangVersion>
+    </PropertyGroup>
 
-	<ItemGroup>
-	  <None Remove="Protos\products.proto" />
-	</ItemGroup>
+    <ItemGroup>
+        <None Remove="Protos\products.proto" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
-		<PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
-		<PackageReference Include="MudBlazor" Version="6.2.3" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
+        <PackageReference Include="MudBlazor" Version="6.2.3" />
+    </ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\Diagnostics\Diagnostics.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Diagnostics\Diagnostics.csproj" />
+    </ItemGroup>
 
-	<ItemGroup>
-	  <Protobuf Include="Protos\products.proto" GrpcServices="Client" />
-	</ItemGroup>
+    <ItemGroup>
+        <Protobuf Include="Protos\products.proto" GrpcServices="Client" />
+    </ItemGroup>
 
 </Project>

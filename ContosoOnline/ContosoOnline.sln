@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders", "Orders\Orders.csp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packaging", "Packaging", "{93F57020-1802-4E09-A317-0CC49947BE75}"
 	ProjectSection(SolutionItems) = preProject
+		..\docker-compose-deps.yml = ..\docker-compose-deps.yml
 		..\docker-compose.yml = ..\docker-compose.yml
+		..\NuGet.config = ..\NuGet.config
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Products", "Products\Products.csproj", "{6E7A43D5-5F93-49C3-A89F-31644350F18A}"
@@ -18,7 +20,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderProcessor", "OrderProc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store", "Store\Store.csproj", "{0BDF7868-40E2-47FE-BD35-D661E069CAAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diagnostics", "Diagnostics\Diagnostics.csproj", "{3037C1F1-2FF4-4E89-955F-DD3917DA39B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diagnostics", "Diagnostics\Diagnostics.csproj", "{3037C1F1-2FF4-4E89-955F-DD3917DA39B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

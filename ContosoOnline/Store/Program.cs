@@ -1,32 +1,28 @@
-using Grpc.Core;
-using Grpc.Net.Client;
-using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using MudBlazor.Services;
 using Store;
 
 var builder = WebApplication.CreateBuilder(args);
-StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
-builder.Services.AddObservability("StoreUX");
+builder.Services.AddObservability("StoreUX", builder.Configuration);
 
-builder.Services.AddSingleton(services =>
+builder.Services.AddGrpcClient<Products.Products.ProductsClient>(c =>
 {
-    var backendUrl = "http://products:8080";
+    var backendUrl = builder.Configuration["PRODUCTS_URL"] ?? throw new InvalidOperationException("PRODUCTS_URL is not set");
 
-    var channel = GrpcChannel.ForAddress(backendUrl, new GrpcChannelOptions
-    {
-        Credentials = ChannelCredentials.Insecure,
-        ServiceProvider = services
-    });
+    c.Address = new(backendUrl);
+});
 
-    return channel;
+builder.Services.AddHttpClient<OrderServiceClient>(c =>
+{
+    var url = builder.Configuration["ORDERS_URL"] ?? throw new InvalidOperationException("ORDERS_URL is not set");
+
+    c.BaseAddress = new(url);
 });
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
-builder.Services.AddHttpClient();
-builder.Services.AddSingleton<OrderServiceClient>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -35,10 +31,10 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
+app.MapObservability();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 

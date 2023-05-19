@@ -14,6 +14,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ORDERS_API=http://orders:8080
       - STORE_UI=http://store:8080
+      - ZIPKIN_URL=http://zipkin:9411
     depends_on:
       - prometheus
       - zipkin
@@ -30,6 +31,9 @@ services:
       dockerfile: ./Store/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - PRODUCTS_URL=http://products:8080
+      - ORDERS_URL=http://orders:8080
+      - ZIPKIN_URL=http://zipkin:9411
     depends_on:
       - prometheus
       - zipkin
@@ -46,7 +50,8 @@ services:
       dockerfile: ./Orders/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - POSTGRES_CONNECTION_STRING=Server=ordersdb;Port=5432;Database=orders;User Id=postuser;Password=example
+      - ZIPKIN_URL=http://zipkin:9411
+      - ConnectionStrings__OrdersDb=Server=ordersdb;Port=5432;Database=orders;User Id=postuser;Password=example
     depends_on:
       - prometheus
       - zipkin
@@ -57,11 +62,16 @@ services:
     hostname: products
     ports:
       - 5001:8080
+      - 8081
     build:
       context: ./ContosoOnline/
       dockerfile: ./Products/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ZIPKIN_URL=http://zipkin:9411
+      - Kestrel__Endpoints__HTTP__Url=http://0.0.0.0:8081
+      - Kestrel__Endpoints__GRPC__Url=http://0.0.0.0:8080
+      - Kestrel__Endpoints__GRPC__Protocols=Http2
     depends_on:
       - prometheus
       - zipkin
@@ -74,9 +84,13 @@ services:
       dockerfile: ./OrderProcessor/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - PRODUCTS_URL=http://products:8080
+      - ORDERS_URL=http://orders:8080
+      - ZIPKIN_URL=http://zipkin:9411
     depends_on:
       - products
       - orders
+      - zipkin
       
   ordersdb:
     container_name: ordersdb

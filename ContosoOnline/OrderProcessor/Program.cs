@@ -1,41 +1,31 @@
-using Grpc.Core;
-using Grpc.Net.Client;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using OrderProcessor;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
-    {
-        services.AddSingleton(services =>
-        {
-            var backendUrl = "http://products:8080";
+var builder = Host.CreateApplicationBuilder(args);
 
-            var channel = GrpcChannel.ForAddress(backendUrl, new GrpcChannelOptions
-            {
-                Credentials = ChannelCredentials.Insecure,
-                ServiceProvider = services
-            });
+builder.Services.AddSingleton<ProductServiceClient>();
+builder.Services.AddGrpcClient<Products.Products.ProductsClient>(c =>
+{
+    var backendUrl = builder.Configuration["PRODUCTS_URL"] ?? throw new InvalidOperationException("PRODUCTS_URL is not set");
 
-            return channel;
-        });
-        services.AddObservability("OrderProcessor", tracing =>
-        {
-            tracing
-                .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                    .AddService(serviceName: "OrderProcessor", serviceVersion: "1.0"))
-                .AddSource(nameof(Worker))
-                .AddZipkinExporter(zipkin =>
-                {
-                    zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
-                });
-        });
-        services.AddHttpClient();
-        services.AddSingleton<OrderServiceClient>();
-        services.AddSingleton<ProductServiceClient>();
-        services.AddHostedService<Worker>();
-    })
-    .Build();
+    c.Address = new(backendUrl);
+});
+
+builder.Services.AddHttpClient<OrderServiceClient>(c =>
+{
+    var url = builder.Configuration["ORDERS_URL"] ?? throw new InvalidOperationException("ORDERS_URL is not set");
+
+    c.BaseAddress = new(url);
+});
+
+builder.Services.AddObservability("OrderProcessor", builder.Configuration, tracing =>
+{
+    tracing.AddSource(nameof(Worker));
+});
+
+builder.Services.AddSingleton<Instrumentation>();
+builder.Services.AddHostedService<Worker>();
+
+var host = builder.Build();
 
 host.Run();
 

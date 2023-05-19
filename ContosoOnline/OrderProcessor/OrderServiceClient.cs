@@ -1,39 +1,28 @@
-﻿namespace OrderProcessor
+﻿namespace OrderProcessor;
+
+public class OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClient> logger)
 {
-    public class OrderServiceClient
+    public async Task<IEnumerable<Order>> GetOrders()
     {
-        private readonly HttpClient _httpClient;
-        private readonly ILogger<OrderServiceClient> _logger;
-        private const string ORDERS_URL = "http://orders:8080/orders";
+        logger.LogInformation("Getting orders from {Url}", httpClient.BaseAddress);
 
-        public OrderServiceClient(IHttpClientFactory httpClientFactory, ILogger<OrderServiceClient> logger)
-        {
-            _httpClient = httpClientFactory.CreateClient("Orders");
-            _logger = logger;
-        }
-        
-        public async Task<List<Order>?> GetOrders()
-        {
-            _logger.LogInformation($"Getting orders from {ORDERS_URL}");
-            
-            var orders = await _httpClient.GetFromJsonAsync<List<Order>>(ORDERS_URL);
+        var orders = await httpClient.GetFromJsonAsync<IEnumerable<Order>>("/orders");
 
-            _logger.LogInformation($"Got {orders?.Count} orders from {ORDERS_URL}");
+        logger.LogInformation("Got {Count} orders from {Url}", orders?.Count() ?? 0, httpClient.BaseAddress);
 
-            return orders;
-        }
-
-        public async Task MarkOrderReadyForShipment(Order order)
-        {
-            _logger.LogInformation($"Marking order {order.OrderId} as ready for shipment");
-            
-            await _httpClient.PutAsJsonAsync($"{ORDERS_URL}/{order.OrderId}", order);
-            
-            _logger.LogInformation($"Marked order {order.OrderId} as ready for shipment");
-        }
+        return orders ?? Enumerable.Empty<Order>();
     }
 
-    public record CartItem(string ProductId, int Quantity = 1);
-
-    public record Order(CartItem[] Cart, DateTime OrderedAt, Guid OrderId);
+    public async Task MarkOrderReadyForShipment(Order order)
+    {
+        logger.LogInformation("Marking order {OrderId} as ready for shipment", order.OrderId);
+        
+        await httpClient.PutAsJsonAsync($"/orders/{order.OrderId}", order);
+        
+        logger.LogInformation("Marked order {OrderId} as ready for shipment", order.OrderId);
+    }
 }
+
+public record CartItem(string ProductId, int Quantity = 1);
+
+public record Order(CartItem[] Cart, DateTime OrderedAt, Guid OrderId);

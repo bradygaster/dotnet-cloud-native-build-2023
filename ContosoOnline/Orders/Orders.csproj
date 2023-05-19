@@ -1,25 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<InvariantGlobalization>true</InvariantGlobalization>
-		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<!-- Talk to the team about this in the sync-up, it doesn't seem to work on my machine -->
-		<!-- I installed Cake --> 
-		<!--PublishAot>true</PublishAot-->
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <!-- Talk to the team about this in the sync-up, it doesn't seem to work on my machine -->
+        <!-- I installed Cake -->
+        <!--PublishAot>true</PublishAot-->
+        <LangVersion>preview</LangVersion>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-preview.3.23177.8" />
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
-		<PackageReference Include="Nanorm.Npgsql" Version="0.0.4" />
-		<PackageReference Include="Npgsql" Version="8.0.0-preview.3" />
-	</ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\Diagnostics\Diagnostics.csproj" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-preview.3.23177.8" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+        <PackageReference Include="Nanorm.Npgsql" Version="0.0.4" />
+        <PackageReference Include="Npgsql" Version="8.0.0-preview.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Diagnostics\Diagnostics.csproj" />
+    </ItemGroup>
 
 </Project>

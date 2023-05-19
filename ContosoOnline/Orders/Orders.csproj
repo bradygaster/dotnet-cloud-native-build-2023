@@ -9,6 +9,7 @@
         <!-- Talk to the team about this in the sync-up, it doesn't seem to work on my machine -->
         <!-- I installed Cake -->
         <!--PublishAot>true</PublishAot-->
+        <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
         <LangVersion>preview</LangVersion>
     </PropertyGroup>
 

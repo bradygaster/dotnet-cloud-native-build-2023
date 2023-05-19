@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-preview AS base
+FROM mcr.microsoft.com/dotnet/nightly/aspnet:8.0-preview AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 8080
@@ -6,10 +6,11 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
 WORKDIR /src
-COPY ["Products/Products.csproj", "Products/"]
-COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
+COPY ["NuGet.config", "."]
+COPY ["ContosoOnline/Products/Products.csproj", "Products/"]
+COPY ["ContosoOnline/Diagnostics/Diagnostics.csproj", "Diagnostics/"]
 RUN dotnet restore "Products/Products.csproj"
-COPY . .
+COPY ./ContosoOnline .
 WORKDIR "/src/Products"
 RUN dotnet build "Products.csproj" -c Release -o /app/build
 

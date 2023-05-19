@@ -8,8 +8,8 @@ services:
     ports:
       - 4999:8080
     build:
-      context: ./ContosoOnline/
-      dockerfile: ./Proxy/Dockerfile
+      context: .
+      dockerfile: ./ContosoOnline/Proxy/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ORDERS_API=http://orders:8080
@@ -27,8 +27,8 @@ services:
     ports:
       - 5003:8080
     build:
-      context: ./ContosoOnline/
-      dockerfile: ./Store/Dockerfile
+      context: .
+      dockerfile: ./ContosoOnline/Store/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - PRODUCTS_URL=http://products:8080
@@ -46,8 +46,8 @@ services:
     ports:
       - 5000:8080
     build:
-      context: ./ContosoOnline/
-      dockerfile: ./Orders/Dockerfile
+      context: .
+      dockerfile: ./ContosoOnline/Orders/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ZIPKIN_URL=http://zipkin:9411
@@ -64,8 +64,8 @@ services:
       - 5001:8080
       - 8081
     build:
-      context: ./ContosoOnline/
-      dockerfile: ./Products/Dockerfile
+      context: .
+      dockerfile: ./ContosoOnline/Products/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ZIPKIN_URL=http://zipkin:9411
@@ -80,8 +80,8 @@ services:
     container_name: orderprocessor
     hostname: orderprocessor
     build:
-      context: ./ContosoOnline/
-      dockerfile: ./OrderProcessor/Dockerfile
+      context: .
+      dockerfile: ./ContosoOnline/OrderProcessor/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - PRODUCTS_URL=http://products:8080

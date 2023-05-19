@@ -1,12 +1,13 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-preview AS base
+FROM mcr.microsoft.com/dotnet/nightly/aspnet:8.0-preview AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
+FROM mcr.microsoft.com/dotnet/nightly/sdk:8.0-preview AS build
 WORKDIR /src
-COPY ["OrderProcessor/OrderProcessor.csproj", "OrderProcessor/"]
-COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
+COPY ["NuGet.config", "."]
+COPY ["ContosoOnline/OrderProcessor/OrderProcessor.csproj", "OrderProcessor/"]
+COPY ["ContosoOnline/Diagnostics/Diagnostics.csproj", "Diagnostics/"]
 RUN dotnet restore "OrderProcessor/OrderProcessor.csproj"
-COPY . .
+COPY ./ContosoOnline .
 WORKDIR "/src/OrderProcessor"
 RUN dotnet build "OrderProcessor.csproj" -c Release -o /app/build
 

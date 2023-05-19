@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>8c1fa008-f58d-4e3c-87e1-4bd2b50b97eb</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
         <LangVersion>preview</LangVersion>
     </PropertyGroup>
 

@@ -1,4 +1,3 @@
-using OpenTelemetry.Trace;
 using OrderProcessor;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -20,11 +19,7 @@ builder.Services.AddHttpClient<OrderServiceClient>(c =>
 
 builder.Services.AddObservability("OrderProcessor", tracing =>
 {
-    tracing.AddSource(nameof(Worker))
-        .AddZipkinExporter(zipkin =>
-        {
-            zipkin.Endpoint = new Uri("http://zipkin:9411/api/v2/spans");
-        });
+    tracing.AddSource(nameof(Worker));
 });
 
 builder.Services.AddHostedService<Worker>();

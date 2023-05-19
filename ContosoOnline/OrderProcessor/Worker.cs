@@ -1,19 +1,18 @@
-using System.Diagnostics;
-
 namespace OrderProcessor;
 
-public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, ProductServiceClient productsClient)
+public class Worker(ILogger<Worker> logger, 
+                    OrderServiceClient ordersClient, 
+                    ProductServiceClient productsClient,
+                    Instrumentation instrumentation)
     : BackgroundService
 {
-    static ActivitySource _activitySource = new ActivitySource(nameof(Worker));
-
     private TimeSpan CheckOrderInterval => TimeSpan.FromSeconds(15);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            using (var activity = _activitySource.StartActivity("order-processor.worker"))
+            using (var activity = instrumentation.ActivitySource.StartActivity("order-processor.worker"))
             {
                 logger.LogInformation($"Worker running at: {DateTime.UtcNow}");
 
@@ -27,7 +26,7 @@ public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, Pro
                     {
                         logger.LogInformation("Checking inventory for Order {OrderId}", order.OrderId);
 
-                        using (var orderActivity = _activitySource.StartActivity("order-processor.process-order"))
+                        using (var orderActivity = instrumentation.ActivitySource.StartActivity("order-processor.process-order"))
                         {
                             orderActivity?.AddTag("order-id", order.OrderId);
                             orderActivity?.AddTag("product-count", order.Cart.Length);

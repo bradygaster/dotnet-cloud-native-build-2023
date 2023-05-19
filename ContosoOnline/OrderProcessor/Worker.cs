@@ -2,10 +2,12 @@ using System.Diagnostics;
 
 namespace OrderProcessor;
 
-public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, ProductServiceClient productsClient) 
+public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, ProductServiceClient productsClient)
     : BackgroundService
 {
     static ActivitySource _activitySource = new ActivitySource(nameof(Worker));
+
+    private TimeSpan CheckOrderInterval => TimeSpan.FromSeconds(15);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -13,7 +15,7 @@ public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, Pro
         {
             using (var activity = _activitySource.StartActivity("order-processor.worker"))
             {
-                logger.LogInformation($"Worker running at: {DateTimeOffset.Now}");
+                logger.LogInformation($"Worker running at: {DateTime.UtcNow}");
 
                 var orders = await ordersClient.GetOrders() ?? Enumerable.Empty<Order>();
                 activity?.AddTag("order-count", orders.Count());
@@ -23,7 +25,7 @@ public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, Pro
                 {
                     orderTasks.Add(Task.Run(async () =>
                     {
-                        logger.LogInformation($"Checking inventory for Order {order.OrderId}");
+                        logger.LogInformation("Checking inventory for Order {OrderId}", order.OrderId);
 
                         using (var orderActivity = _activitySource.StartActivity("order-processor.process-order"))
                         {
@@ -37,23 +39,25 @@ public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, Pro
                             {
                                 itemTasks.Add(Task.Run(async () =>
                                 {
-                                    logger.LogInformation($"Checking inventory for product id {cartItem.ProductId} in order {order.OrderId}");
+                                    logger.LogInformation("Checking inventory for product id {ProductId} in order {OrderId}", cartItem.ProductId, order.OrderId);
 
                                     var inStock = await productsClient.CanInventoryFulfill(cartItem.ProductId, cartItem.Quantity);
 
                                     if (inStock)
                                     {
-                                        logger.LogInformation($"Inventory OK for product id {cartItem.ProductId} in order {order.OrderId}");
+                                        logger.LogInformation("Inventory OK for product id {ProductId} in order {OrderId}", cartItem.ProductId, order.OrderId);
                                     }
                                     else
                                     {
-                                        logger.LogInformation($"Not enough inventory for product id {cartItem.ProductId} in order {order.OrderId}");
+                                        logger.LogInformation("Not enough inventory for product id {ProductId} in order {OrderId}", cartItem.ProductId, order.OrderId);
 
                                         canWeFulfillOrder = canWeFulfillOrder && inStock;
                                     }
                                 }));
                             }
+
                             await Task.WhenAll(itemTasks);
+
                             orderActivity?.SetTag("can-fulfill-order", canWeFulfillOrder);
 
                             if (canWeFulfillOrder)
@@ -63,19 +67,19 @@ public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, Pro
                                 {
                                     invTasks.Add(Task.Run(async () =>
                                     {
-                                        logger.LogInformation($"Removing {cartItem.Quantity} of product id {cartItem.ProductId} from inventory");
+                                        logger.LogInformation("Removing {Quantity} of product id {ProductId} from inventory", cartItem.Quantity, cartItem.ProductId);
 
                                         await productsClient.SubtractInventory(cartItem.ProductId, cartItem.Quantity);
 
-                                        logger.LogInformation($"Removed {cartItem.Quantity} of product id {cartItem.ProductId} from inventory");
+                                        logger.LogInformation("Removed {Quantity} of product id {ProductId} from inventory", cartItem.Quantity, cartItem.ProductId);
                                     }));
                                 }
 
-                                logger.LogInformation($"Marking order {order.OrderId} as ready for shipment");
+                                logger.LogInformation("Marking order {OrderId} as ready for shipment", order.OrderId);
 
                                 invTasks.Add(ordersClient.MarkOrderReadyForShipment(order));
 
-                                logger.LogInformation($"Marked order {order.OrderId} as ready for shipment");
+                                logger.LogInformation("Marked order {OrderId} as ready for shipment", order.OrderId);
 
                                 await Task.WhenAll(invTasks);
                             }
@@ -85,7 +89,8 @@ public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, Pro
                     await Task.WhenAll(orderTasks);
                 }
             }
-            await Task.Delay(15000, stoppingToken);
+
+            await Task.Delay(CheckOrderInterval, stoppingToken);
         }
     }
 }

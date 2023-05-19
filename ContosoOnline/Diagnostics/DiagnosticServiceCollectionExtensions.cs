@@ -20,6 +20,7 @@ public static class DiagnosticServiceCollectionExtensions
                     metrics
                         .SetResourceBuilder(resource)
                         .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
                         .AddEventCountersInstrumentation(c =>
                         {
                             c.AddEventSources(
@@ -39,6 +40,8 @@ public static class DiagnosticServiceCollectionExtensions
                 {
                     tracing.SetResourceBuilder(resource)
                            .AddAspNetCoreInstrumentation()
+                           .AddHttpClientInstrumentation()
+                           .AddGrpcClientInstrumentation()
                            .AddZipkinExporter(zipkin =>
                            {
                                var zipkinUrl = configuration["ZIPKIN_URL"] ?? "http://localhost:9411";

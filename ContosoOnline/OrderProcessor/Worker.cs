@@ -1,7 +1,7 @@
 namespace OrderProcessor;
 
-public class Worker(ILogger<Worker> logger, 
-                    OrderServiceClient ordersClient, 
+public class Worker(ILogger<Worker> logger,
+                    OrderServiceClient ordersClient,
                     ProductServiceClient productsClient,
                     Instrumentation instrumentation)
     : BackgroundService
@@ -22,6 +22,11 @@ public class Worker(ILogger<Worker> logger,
                 // REVIEW: Should we do this concurrently?
                 foreach (var order in orders)
                 {
+                    if (stoppingToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
                     await ProcessOrderAsync(order);
                 }
             }

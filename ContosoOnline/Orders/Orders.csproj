@@ -14,7 +14,7 @@
 
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-preview.3.23177.8" />
+        <PackageReference Include="Microsoft.Extensions.Resilience" Version="8.0.0-alpha.1.23269.1" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
         <PackageReference Include="Nanorm.Npgsql" Version="0.0.4" />
         <PackageReference Include="Npgsql" Version="8.0.0-preview.3" />

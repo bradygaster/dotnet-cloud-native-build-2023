@@ -15,8 +15,8 @@ public class Worker(ILogger<Worker> logger, OrderServiceClient ordersClient, Pro
             {
                 logger.LogInformation($"Worker running at: {DateTimeOffset.Now}");
 
-                var orders = await ordersClient.GetOrders();
-                activity?.AddTag("order-count", orders?.Count() ?? 0);
+                var orders = await ordersClient.GetOrders() ?? Enumerable.Empty<Order>();
+                activity?.AddTag("order-count", orders.Count());
 
                 var orderTasks = new List<Task>();
                 foreach (Order? order in orders)

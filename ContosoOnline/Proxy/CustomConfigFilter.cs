@@ -3,7 +3,7 @@ using Yarp.ReverseProxy.Configuration;
 
 namespace Proxy;
 
-public class CustomConfigFilter(IConfiguration configuration, ILogger<CustomConfigFilter> logger) : IProxyConfigFilter
+public class CustomConfigFilter(IConfiguration configuration) : IProxyConfigFilter
 {
     // Matches {{env_var_name}} or {{my-name}} or {{123name}} etc.
     private readonly Regex _exp = new("\\{\\{(\\w+\\-?\\w+?)\\}\\}");

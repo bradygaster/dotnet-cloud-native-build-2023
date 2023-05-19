@@ -10,7 +10,7 @@ scrape_configs:
       - targets: ['host.docker.internal:5002']
   - job_name: 'storeux'
     static_configs:
-      - targets: ['host.docker.internal:8080']
+      - targets: ['host.docker.internal:5176']
   - job_name: 'proxy'
     static_configs:
-      - targets: ['host.docker.internal:5176']
+      - targets: ['host.docker.internal:4999']

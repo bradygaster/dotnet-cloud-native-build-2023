@@ -21,13 +21,21 @@ public static class OrdersApi
             return orders;
         });
 
-        group.MapPost("/", async Task<Created<Order>> (Order order, IOrdersDb db, CancellationToken ct) =>
+        group.MapPost("/", async Task<Results<BadRequest, Created<Order>>> (Order order, IOrdersDb db, CancellationToken ct) =>
         {
             var createdOrder = await db.AddOrderAsync(order.OrderId, ct);
 
-            foreach (var item in order.Cart)
+            if (createdOrder is null)
             {
-                await db.AddCartItemAsync(order.OrderId, item.ProductId, item.Quantity, ct);
+                return TypedResults.BadRequest();
+            }
+
+            if (order.Cart is not null)
+            {
+                foreach (var item in order.Cart)
+                {
+                    await db.AddCartItemAsync(order.OrderId, item.ProductId, item.Quantity, ct);
+                }
             }
 
             return TypedResults.Created($"/orders", new Order(createdOrder.OrderedAt, createdOrder.OrderId));
@@ -49,5 +57,5 @@ public record CartItem(string ProductId, int Quantity = 1);
 public record Order(DateTime OrderedAt, Guid OrderId)
 {
     public bool HasShipped { get; set; }
-    public CartItem[] Cart { get; set; }
+    public CartItem[]? Cart { get; set; }
 }

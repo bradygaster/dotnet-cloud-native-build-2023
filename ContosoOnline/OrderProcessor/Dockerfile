@@ -11,6 +11,7 @@ ENV GRPC_PROTOC_PLUGIN=/usr/bin/grpc_csharp_plugin
 
 WORKDIR /src
 COPY ["OrderProcessor/OrderProcessor.csproj", "OrderProcessor/"]
+COPY ["OrderProcessor/NuGet.config", "OrderProcessor/"]
 COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
 RUN dotnet restore "OrderProcessor/OrderProcessor.csproj"
 COPY . .

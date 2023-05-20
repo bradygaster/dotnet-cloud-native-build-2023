@@ -6,6 +6,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
 WORKDIR /src
 COPY ["Store/Store.csproj", "Store/"]
+COPY ["Store/NuGet.config", "Store/"]
 COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
 RUN dotnet restore "Store/Store.csproj"
 COPY . .

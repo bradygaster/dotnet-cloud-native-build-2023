@@ -16,18 +16,32 @@ public class Worker(ILogger<Worker> logger,
             {
                 logger.LogInformation($"Worker running at: {DateTime.UtcNow}");
 
-                var orders = await ordersClient.GetOrders();
-                activity?.AddTag("order-count", orders.Count());
-
-                // REVIEW: Should we do this concurrently?
-                foreach (var order in orders)
+                try
                 {
-                    if (stoppingToken.IsCancellationRequested)
-                    {
-                        break;
-                    }
+                    var orders = await ordersClient.GetOrders();
+                    activity?.AddTag("order-count", orders.Count());
 
-                    await ProcessOrderAsync(order);
+                    // REVIEW: Should we do this concurrently?
+                    foreach (var order in orders)
+                    {
+                        if (stoppingToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
+                        try
+                        {
+                            await ProcessOrderAsync(order);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "Error processing order {OrderId}", order.OrderId);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error getting orders");
                 }
             }
 

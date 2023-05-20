@@ -10,7 +10,7 @@ public static class OrdersApi
 
         group.MapGet("/", async (IOrdersDb db) =>
         {
-            var orders = (await db.GetShippedOrdersAsync()).Select(p => new Order(p.OrderedAt, p.OrderId)).ToList();
+            var orders = (await db.GetUnshippedOrdersAsync()).Select(p => new Order(p.OrderedAt, p.OrderId)).ToList();
 
             var cartItems = (await db.GetCartItemsAsync()).ToList();
 

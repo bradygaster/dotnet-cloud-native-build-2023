@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0-preview-alpine AS build
+FROM mcr.microsoft.com/dotnet/nightly/sdk:8.0-preview-alpine AS build
 
 RUN apk add \
 	# Add NativeAOT pre-reqs
@@ -10,12 +10,13 @@ ENV PROTOBUF_PROTOC=/usr/bin/protoc
 ENV GRPC_PROTOC_PLUGIN=/usr/bin/grpc_csharp_plugin
 
 WORKDIR /src
-COPY ["Products/Products.csproj", "Products/"]
-COPY ["Diagnostics/Diagnostics.csproj", "Diagnostics/"]
+COPY ["NuGet.config", "."]
+COPY ["ContosoOnline/Products/Products.csproj", "Products/"]
+COPY ["ContosoOnline/Diagnostics/Diagnostics.csproj", "Diagnostics/"]
 RUN dotnet restore "Products/Products.csproj"
-COPY . .
-WORKDIR /src/Products
-RUN dotnet publish "Products.csproj" -o /app/publish
+COPY ./ContosoOnline .
+WORKDIR "/src/Products"
+RUN dotnet publish "Products.csproj" -c Release -o /app/publish
 
 # remove the symbols so they aren't part of the published app
 RUN rm -rf /app/publish/*.dbg

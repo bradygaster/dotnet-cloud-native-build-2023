@@ -5,7 +5,7 @@ namespace Orders;
 
 public interface IOrdersDb
 {
-    public Task<List<OrderDatabaseRecord>> GetShippedOrdersAsync();
+    public Task<List<OrderDatabaseRecord>> GetUnshippedOrdersAsync();
     public Task<List<CartItemDatabaseRecord>> GetCartItemsAsync();
 
     public Task<OrderDatabaseRecord?> AddOrderAsync(Guid orderId, CancellationToken cancellationToken);
@@ -13,7 +13,7 @@ public interface IOrdersDb
     public Task<bool> MarkOrderShippedAsync(Guid orderId);
 }
 
-public class OrdersDb(NpgsqlDataSource db) : IOrdersDb
+public class OrdersDb(NpgsqlDataSource db, DatabaseRetryPolicies policies) : IOrdersDb
 {
     public Task<CartItemDatabaseRecord?> AddCartItemAsync(Guid orderId, string productId, int quantity, CancellationToken cancellationToken)
     {
@@ -35,16 +35,20 @@ public class OrdersDb(NpgsqlDataSource db) : IOrdersDb
 
     public Task<List<CartItemDatabaseRecord>> GetCartItemsAsync()
     {
-        return db.QueryAsync<CartItemDatabaseRecord>("SELECT * FROM carts").ToListAsync();
+        return policies.CartItemListPolicy.ExecuteAsync(() =>
+            db.QueryAsync<CartItemDatabaseRecord>("SELECT * FROM carts").ToListAsync());
     }
 
-    public Task<List<OrderDatabaseRecord>> GetShippedOrdersAsync()
+    public Task<List<OrderDatabaseRecord>> GetUnshippedOrdersAsync()
     {
-        return db.QueryAsync<OrderDatabaseRecord>("SELECT * FROM orders WHERE hasshipped = false").ToListAsync();
+        return policies.OrderListPolicy.ExecuteAsync(() => 
+            db.QueryAsync<OrderDatabaseRecord>("SELECT * FROM orders WHERE hasshipped = false").ToListAsync());
     }
 
-    public async Task<bool> MarkOrderShippedAsync(Guid orderId)
+    public Task<bool> MarkOrderShippedAsync(Guid orderId)
     {
-        return await db.ExecuteAsync("UPDATE orders SET hasshipped = true WHERE orderid = $1", orderId.AsTypedDbParameter()) == 1;
+        return policies.MarkOrderUpdatedPolicy.ExecuteAsync(async () =>
+            await db.ExecuteAsync("UPDATE orders SET hasshipped = true WHERE orderid = $1", orderId.AsTypedDbParameter()) == 1
+        );
     }
 }

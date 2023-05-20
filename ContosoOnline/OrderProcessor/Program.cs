@@ -15,6 +15,7 @@ builder.Services.AddGrpcClient<Products.Products.ProductsClient>(c =>
 builder.Services.AddHttpClient<OrderServiceClient>(c =>
 {
     var url = builder.Configuration["ORDERS_URL"] ?? throw new InvalidOperationException("ORDERS_URL is not set");
+
     c.BaseAddress = new(url);
 })
 .AddStandardResilienceHandler();

@@ -6,9 +6,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>true</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <!-- Talk to the team about this in the sync-up, it doesn't seem to work on my machine -->
-        <!-- I installed Cake -->
-        <!--PublishAot>true</PublishAot-->
         <LangVersion>preview</LangVersion>
     </PropertyGroup>
 

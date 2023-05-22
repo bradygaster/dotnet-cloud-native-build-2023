@@ -26,7 +26,6 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 17706,
   "graphTooltip": 0,
-  "id": 38,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -446,7 +445,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 6,
         "x": 0,
         "y": 9
@@ -539,7 +538,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 6,
         "x": 6,
         "y": 9
@@ -578,144 +577,6 @@
         "type": "prometheus",
         "uid": "Prometheus"
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "blue",
-            "mode": "fixed"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 12,
-        "y": 9
-      },
-      "id": 58,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "value"
-      },
-      "pluginVersion": "9.4.8",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "sum(ec_Microsoft_AspNetCore_Hosting_current_requests{job=\"$job\", instance=\"$instance\"})",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Total Requests",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-red",
-            "mode": "fixed"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 18,
-        "y": 9
-      },
-      "id": 59,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "value"
-      },
-      "pluginVersion": "9.4.8",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "sum(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\", exception_name!=\"\"})",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Total Unhandled Exceptions",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
-      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -744,7 +605,7 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 13
+        "y": 9
       },
       "id": 60,
       "options": {
@@ -761,7 +622,7 @@
         },
         "textMode": "value_and_name"
       },
-      "pluginVersion": "9.4.8",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -811,7 +672,7 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 13
+        "y": 9
       },
       "id": 42,
       "options": {
@@ -828,7 +689,7 @@
         },
         "textMode": "value_and_name"
       },
-      "pluginVersion": "9.4.8",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -949,14 +810,15 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 6,
         "w": 12,
-        "x": 0,
-        "y": 17
+        "x": 12,
+        "y": 13
       },
       "hideTimeOverride": false,
       "id": 51,
       "options": {
+        "cellHeight": "sm",
         "footer": {
           "countRows": false,
           "fields": "",
@@ -973,7 +835,7 @@
           }
         ]
       },
-      "pluginVersion": "9.4.8",
+      "pluginVersion": "9.5.1",
       "targets": [
         {
           "datasource": {
@@ -1018,181 +880,9 @@
         }
       ],
       "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Requests"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 300
-              },
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "mode": "gradient",
-                  "type": "gauge"
-                }
-              },
-              {
-                "id": "color",
-                "value": {
-                  "mode": "continuous-YlRd"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Endpoint"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "",
-                    "url": "/d/NagEsjE4z/asp-net-core-endpoint-details?var-route=${__data.fields.route}&var-method=${__data.fields.method}&${__url_time_range}"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "route"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "method"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 17
-      },
-      "hideTimeOverride": false,
-      "id": 54,
-      "options": {
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
-      },
-      "pluginVersion": "9.4.8",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "  topk(10,\r\n  sum by (http_route, http_method, method_route) (\r\n    label_join(max_over_time(http_server_duration_ms_count{job=\"$job\", instance=\"$instance\", http_route!=\"\", http_status_code=\"500\"}[$__rate_interval]), \"method_route\", \" \", \"http_method\", \"http_route\")\r\n  ))",
-          "format": "table",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{route}}",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Top 10 Unhandled Exception Endpoints",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "method": false
-            },
-            "indexByName": {
-              "Time": 0,
-              "Value": 4,
-              "method": 2,
-              "method_route": 3,
-              "route": 1
-            },
-            "renameByName": {
-              "Value": "Requests",
-              "method": "",
-              "method_route": "Endpoint",
-              "route": ""
-            }
-          }
-        }
-      ],
-      "type": "table"
     }
   ],
-  "refresh": "",
+  "refresh": "5s",
   "revision": 1,
   "schemaVersion": 38,
   "style": "dark",
@@ -1206,8 +896,8 @@
       {
         "current": {
           "selected": false,
-          "text": "dotnet",
-          "value": "dotnet"
+          "text": "orders",
+          "value": "orders"
         },
         "datasource": {
           "type": "prometheus",
@@ -1231,6 +921,11 @@
         "type": "query"
       },
       {
+        "current": {
+          "selected": false,
+          "text": "orders:8080",
+          "value": "orders:8080"
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "Prometheus"
@@ -1262,6 +957,6 @@
   "timezone": "",
   "title": "ASP.NET Core",
   "uid": "KdDACDp4z",
-  "version": 5,
+  "version": 1,
   "weekStart": ""
 }

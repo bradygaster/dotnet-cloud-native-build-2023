@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
-        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.0.0-alpha.1.23269.5" />
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.0.0-preview.4.23273.7" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
     </ItemGroup>
 

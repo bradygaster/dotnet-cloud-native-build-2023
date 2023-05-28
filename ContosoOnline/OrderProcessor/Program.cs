@@ -3,7 +3,7 @@ using OrderProcessor;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.AddSingleton<ProductServiceClient>();
+builder.Services.AddTransient<ProductServiceClient>();
 builder.Services.AddGrpcClient<Products.Products.ProductsClient>(c =>
 {
     var backendUrl = builder.Configuration["PRODUCTS_URL"] ?? throw new InvalidOperationException("PRODUCTS_URL is not set");
@@ -26,7 +26,8 @@ builder.Services.AddObservability("OrderProcessor", builder.Configuration, traci
 });
 
 builder.Services.AddSingleton<Instrumentation>();
-builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<OrderProcessingWorker>();
+builder.Services.AddScoped<OrderProcessingRequest>();
 
 var host = builder.Build();
 

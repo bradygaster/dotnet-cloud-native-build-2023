@@ -1,51 +1,33 @@
+﻿using System.Diagnostics;
+
 namespace OrderProcessor;
 
-public class Worker(ILogger<Worker> logger,
-                    OrderServiceClient ordersClient,
-                    ProductServiceClient productsClient,
-                    Instrumentation instrumentation)
-    : BackgroundService
+public class OrderProcessingRequest(Instrumentation instrumentation, 
+                                    ILogger<OrderProcessingRequest> logger, 
+                                    OrderServiceClient ordersClient, 
+                                    ProductServiceClient productsClient)
 {
-    private TimeSpan CheckOrderInterval => TimeSpan.FromSeconds(15);
-
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task ProcessOrdersAsync(Activity? activity, CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        var orders = await ordersClient.GetOrdersAsync(stoppingToken);
+        activity?.AddTag("order-count", orders.Count());
+
+        // REVIEW: Should we do this concurrently?
+        foreach (var order in orders)
         {
-            using (var activity = instrumentation.ActivitySource.StartActivity("order-processor.worker"))
+            if (stoppingToken.IsCancellationRequested)
             {
-                logger.LogInformation($"Worker running at: {DateTime.UtcNow}");
-
-                try
-                {
-                    var orders = await ordersClient.GetOrders();
-                    activity?.AddTag("order-count", orders.Count());
-
-                    // REVIEW: Should we do this concurrently?
-                    foreach (var order in orders)
-                    {
-                        if (stoppingToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
-
-                        try
-                        {
-                            await ProcessOrderAsync(order);
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.LogError(ex, "Error processing order {OrderId}", order.OrderId);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Error getting orders");
-                }
+                break;
             }
 
-            await Task.Delay(CheckOrderInterval, stoppingToken);
+            try
+            {
+                await ProcessOrderAsync(order);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error processing order {OrderId}", order.OrderId);
+            }
         }
     }
 

@@ -44,7 +44,7 @@ services:
     container_name: orders
     hostname: orders
     ports:
-      - 5000:8080
+      - 5004:8080
     build:
       context: .
       dockerfile: ./ContosoOnline/Orders/Dockerfile

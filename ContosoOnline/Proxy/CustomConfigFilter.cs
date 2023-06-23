@@ -1,12 +1,17 @@
 ﻿using System.Text.RegularExpressions;
-using Yarp.ReverseProxy.Configuration;
 
-namespace Proxy;
+namespace Yarp.ReverseProxy.Configuration;
 
-public class CustomConfigFilter(IConfiguration configuration) : IProxyConfigFilter
+public class ConfigurationDrivenFilter : IProxyConfigFilter
 {
     // Matches {{env_var_name}} or {{my-name}} or {{123name}} etc.
     private readonly Regex _exp = new("\\{\\{(\\w+\\-?\\w+?)\\}\\}");
+    private IConfiguration _configuration;
+
+    public ConfigurationDrivenFilter(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
 
     public ValueTask<ClusterConfig> ConfigureClusterAsync(ClusterConfig cluster, CancellationToken cancel)
     {
@@ -23,9 +28,8 @@ public class CustomConfigFilter(IConfiguration configuration) : IProxyConfigFilt
             var origAddress = d.Value.Address;
             if (_exp.IsMatch(origAddress))
             {
-                // Get the name of the env variable from the destination and lookup value
                 var lookup = _exp.Matches(origAddress)[0].Groups[1].Value;
-                var newAddress = configuration.GetValue<string>(lookup);
+                var newAddress = _configuration.GetValue<string>(lookup);
 
                 if (string.IsNullOrWhiteSpace(newAddress))
                 {
@@ -53,4 +57,10 @@ public class CustomConfigFilter(IConfiguration configuration) : IProxyConfigFilt
 
         return new ValueTask<RouteConfig>(route);
     }
+}
+
+public static class ConfigurationDrivenFilterReverseProxyBuilderExtensions
+{
+    public static IReverseProxyBuilder AddConfigurationDrivenProxyFilter(this IReverseProxyBuilder builder)
+        => builder.AddConfigFilter<ConfigurationDrivenFilter>();
 }

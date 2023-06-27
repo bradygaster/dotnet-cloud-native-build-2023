@@ -5,7 +5,7 @@ public class OrderProcessingWorker(ILogger<OrderProcessingWorker> logger,
                                    IServiceScopeFactory serviceScopeFactory)
     : BackgroundService
 {
-    private TimeSpan CheckOrderInterval => TimeSpan.FromSeconds(15);
+    private TimeSpan CheckOrderInterval => TimeSpan.FromSeconds(5);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

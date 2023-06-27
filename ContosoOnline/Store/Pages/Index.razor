@@ -35,7 +35,17 @@
     </RowTemplate>
     <FooterContent>
         <MudTd>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => SubmitOrder())">Submit Order</MudButton>
+            <MudButton Disabled="@_processing" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => SubmitOrder())">
+                @if (_processing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Processing</MudText>
+                }
+                else
+                {
+                    <MudText>Submit Order</MudText>
+                }
+            </MudButton>
         </MudTd>
     </FooterContent>
 </MudTable>
@@ -45,6 +55,7 @@
     private List<Product> _products = new List<Product>();
     private List<CartItem> _cart = new List<CartItem>();
     private bool _shouldRender;
+    private bool _processing = false;
 
     override protected bool ShouldRender() => _shouldRender;
 
@@ -83,9 +94,14 @@
 
     protected async Task SubmitOrder()
     {
+        _processing = true;
+        StateHasChanged();
+        
         var result = await _orderClient.SubmitNewOrder(_cart.ToArray());
         _cart.Clear();
         await GetProducts();
+
+        _processing = false;
         StateHasChanged();
     }
 } 

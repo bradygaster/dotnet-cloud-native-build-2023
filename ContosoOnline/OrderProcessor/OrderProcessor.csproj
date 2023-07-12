@@ -7,7 +7,8 @@
         <InvariantGlobalization>true</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <LangVersion>preview</LangVersion>
-    </PropertyGroup>
+      <UserSecretsId>ad065b74-0b55-4bb5-9321-225a9bf3ae30</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <None Remove="Protos\products.proto" />

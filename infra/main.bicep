@@ -74,6 +74,20 @@ module redis 'core/host/container-app.bicep' = {
   }
 }
 
+// this launches a postgres instance inside of the ACA env
+module postgres 'core/host/container-app.bicep' = {
+  name: 'postgres'
+  scope: resourceGroup
+  params: {
+    name: 'postgres'
+    location: location
+    tags: tags
+    containerAppsEnvironmentName: containerApps.outputs.environmentName
+    containerRegistryName: containerApps.outputs.registryName
+    serviceType: 'postgres'
+  }
+}
+
 // front end
 module store 'app/store.bicep' = {
   name: 'store'
@@ -101,6 +115,12 @@ module orders 'app/orders.bicep' = {
     allowExternalIngress: true // todo: turn this to false once we're good here
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
+    serviceBinds: [
+      {
+        serviceId: postgres.outputs.id
+        name: postgres.name
+      }
+    ]
   }
 }
 

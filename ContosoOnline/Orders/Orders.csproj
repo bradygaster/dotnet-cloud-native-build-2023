@@ -16,6 +16,7 @@
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
         <PackageReference Include="Nanorm.Npgsql" Version="0.0.4" />
         <PackageReference Include="Npgsql" Version="8.0.0-preview.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>

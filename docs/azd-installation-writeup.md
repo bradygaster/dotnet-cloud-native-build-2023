@@ -18,3 +18,14 @@ This document will outline the entire process I went through to add AZD deployme
 
 1. Edit `main.bicep` down to the bare minimum for what the sample app would need to run. 
 
+1. Write the bicep for each of the services that need to be deployed:
+
+    1. `proxy.bicep` - the YARP front door
+    1. `store.bicep` - the front door
+    1. `orders.bicep` - the REST API that receives orders and stores them in PostgreSQL
+    1. `products.bicep` - the gRPC service for products
+    1. `orderprocessor.bicep` - the microservice that processes incoming orders
+
+1. Run `azd provision` a few times to make sure things would provision and fixed bugs. 
+
+1. Created a new environment, did an `azd up`, and then debugged issues with my bicep and configuration. I knew I'd need to add PostgreSQL at some point since that's a dependency so I knew the first few tries would fail. 

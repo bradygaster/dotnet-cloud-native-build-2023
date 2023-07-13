@@ -83,7 +83,7 @@ module store 'app/store.bicep' = {
     location: location
     tags: tags
     exists: storeAppExists
-    allowExternalIngress: false
+    allowExternalIngress: true // todo: turn this to false once we're good here
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
   }
@@ -98,7 +98,7 @@ module orders 'app/orders.bicep' = {
     location: location
     tags: tags
     exists: ordersAppExists
-    allowExternalIngress: false
+    allowExternalIngress: true // todo: turn this to false once we're good here
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
   }

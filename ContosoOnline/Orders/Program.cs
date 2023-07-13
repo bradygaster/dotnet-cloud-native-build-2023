@@ -1,8 +1,8 @@
 using Orders;
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Services.AddObservability("Orders", builder.Configuration);
-//builder.Services.AddDatabase();
+builder.Services.AddObservability("Orders", builder.Configuration);
+builder.Services.AddDatabase();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -23,7 +23,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.MapOrdersApi();
-//app.MapObservability();
+app.MapOrdersApi();
+app.MapObservability();
 
 app.Run();

@@ -45,6 +45,14 @@ module app '../core/host/container-app-upsert.bicep' = {
         name: 'ASPNETCORE_ENVIRONMENT'
         value: 'Development'
       }
+      {
+        name: 'PRODUCTS_URL'
+        value: 'http://products'
+      }
+      {
+        name: 'ORDERS_URL'
+        value: 'http://orders'
+      }
     ]
     ingressEnabled: false
     external: allowExternalIngress

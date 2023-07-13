@@ -7,12 +7,6 @@ param exists bool
 param serviceName string = 'store'
 param identityName string = '${serviceName}Identity'
 
-@description('Should external HTTP/S access be permitted')
-param allowExternalIngress bool = false
-
-@description('The port HTTP/S traffic should be forwarded to')
-param targetPort int = 8080
-
 @description('An array of service binds')
 param serviceBinds array = []
 
@@ -45,10 +39,18 @@ module app '../core/host/container-app-upsert.bicep' = {
         name: 'ASPNETCORE_ENVIRONMENT'
         value: 'Development'
       }
+      {
+        name: 'PRODUCTS_URL'
+        value: 'http://products'
+      }
+      {
+        name: 'ORDERS_URL'
+        value: 'http://orders'
+      }
     ]
     ingressEnabled: true
-    external: allowExternalIngress
-    targetPort: targetPort
+    external: true
+    targetPort: 8080
     serviceBinds: serviceBinds
   }
 }

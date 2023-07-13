@@ -97,46 +97,8 @@ module store 'app/store.bicep' = {
     location: location
     tags: tags
     exists: storeAppExists
-    allowExternalIngress: true // todo: turn this to false once we're good here
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
-  }
-}
-
-// orders api
-module orders 'app/orders.bicep' = {
-  name: 'orders'
-  scope: resourceGroup
-  params: {
-    name: 'orders'
-    location: location
-    tags: tags
-    exists: ordersAppExists
-    allowExternalIngress: true // todo: turn this to false once we're good here
-    containerAppsEnvironmentName: containerApps.outputs.environmentName
-    containerRegistryName: containerApps.outputs.registryName
-    serviceBinds: [
-      {
-        serviceId: postgres.outputs.id
-        name: postgres.name
-      }
-    ]
-  }
-}
-
-// products api
-module products 'app/products.bicep' = {
-  name: 'products'
-  scope: resourceGroup
-  params: {
-    name: 'products'
-    location: location
-    tags: tags
-    exists: productsAppExists
-    allowExternalIngress: false
-    containerAppsEnvironmentName: containerApps.outputs.environmentName
-    containerRegistryName: containerApps.outputs.registryName
-    targetPort: 8080
   }
 }
 
@@ -167,6 +129,43 @@ module orderprocessor 'app/orderprocessor.bicep' = {
     allowExternalIngress: false
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
+  }
+}
+
+// products api
+module products 'app/products.bicep' = {
+  name: 'products'
+  scope: resourceGroup
+  params: {
+    name: 'products'
+    location: location
+    tags: tags
+    exists: productsAppExists
+    allowExternalIngress: false
+    containerAppsEnvironmentName: containerApps.outputs.environmentName
+    containerRegistryName: containerApps.outputs.registryName
+    targetPort: 8080
+  }
+}
+
+// orders api
+module orders 'app/orders.bicep' = {
+  name: 'orders'
+  scope: resourceGroup
+  params: {
+    name: 'orders'
+    location: location
+    tags: tags
+    exists: ordersAppExists
+    allowExternalIngress: true // todo: turn this to false once we're good here
+    containerAppsEnvironmentName: containerApps.outputs.environmentName
+    containerRegistryName: containerApps.outputs.registryName
+    serviceBinds: [
+      {
+        serviceId: postgres.outputs.id
+        name: postgres.name
+      }
+    ]
   }
 }
 

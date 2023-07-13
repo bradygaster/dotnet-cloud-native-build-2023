@@ -136,6 +136,7 @@ module products 'app/products.bicep' = {
     allowExternalIngress: false
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
+    targetPort: 8080
   }
 }
 

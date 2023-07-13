@@ -57,7 +57,13 @@ This document will outline the entire process I went through to add AZD deployme
 1. `azd deploy postgres` - This actually fails as there's nothing to deploy. 
 1. Checked the logs for `postgres` once it came up. 
 1. Turn off all `MapOrdersApi`and `AddDatabase` so the `orders` app is bare bones. 
-
+1. Found a connection string in `appsettings.json` that was probably messing me up, deleted that after deploying step-by-step and it seems to work. 
+1. Turned `AddDatabase` back on and deployed, the site works. 
+1. Turned `MapOrdersApi` back on and deployed. The site works, and I now see all the API methods. 
+1. Turned observability back on and deployed. If the `orders` app continues to work, it demonstrates that the other apps will continue to function in the abscence of Prometheus and Zipkin. 
+1. The `orders` API is working, still. 
+1. `azd deploy products` to deploy the back-end products gRPC service. I get a "Degraded" state on the revision following deployment. Will need to investigate what's happening here. 
+1. After debugging with the team members and reviewing `appsettings.json` code and IAC code, I realized there were port conflicts in the locally-running and deployed code so I resolved those and got `products` successfully deploying.
 
 
 ## Things I wish the ACA tools in VS Code would do

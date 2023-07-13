@@ -45,11 +45,25 @@ module app '../core/host/container-app-upsert.bicep' = {
         name: 'ASPNETCORE_ENVIRONMENT'
         value: 'Development'
       }
+      {
+        name: 'Kestrel__Endpoints__HTTP__Url'
+        value: 'http://0.0.0.0:8081'
+      }
+      {
+        name: 'Kestrel__Endpoints__GRPC__Url'
+        value: 'http://0.0.0.0:8080'
+      }
+      {
+        name: 'Kestrel__Endpoints__GRPC__Protocols'
+        value: 'Http2'
+      }
     ]
     ingressEnabled: true
     external: allowExternalIngress
     targetPort: targetPort
     serviceBinds: serviceBinds
+    transport: 'http2'
+    allowInsecure: true
   }
 }
 

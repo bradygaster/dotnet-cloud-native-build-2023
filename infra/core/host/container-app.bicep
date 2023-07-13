@@ -56,6 +56,9 @@ param imageName string = ''
 @description('Specifies if Ingress is enabled for the container app')
 param ingressEnabled bool = true
 
+@description('Specifies if Non-HTTPS access is enabled for the container app')
+param allowInsecure bool = false
+
 param revisionMode string = 'Single'
 
 @description('The secrets required for the container')
@@ -66,6 +69,9 @@ param serviceBinds array = []
 
 @description('The name of the container apps add-on to use. e.g. redis')
 param serviceType string = ''
+
+@description('The type of transport that should be expected for ingress. e.g. http, http2')
+param transport string = 'auto'
 
 @description('The target port for the container')
 param targetPort int = 80
@@ -107,8 +113,9 @@ resource app 'Microsoft.App/containerApps@2023-04-01-preview' = {
       activeRevisionsMode: revisionMode
       ingress: ingressEnabled ? {
         external: external
+        allowInsecure: allowInsecure
         targetPort: targetPort
-        transport: 'auto'
+        transport: transport
         corsPolicy: {
           allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
         }

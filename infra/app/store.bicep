@@ -3,6 +3,7 @@ param location string = resourceGroup().location
 param tags object = {}
 param containerAppsEnvironmentName string
 param containerRegistryName string
+param applicationInsightsConnectionString string
 param exists bool
 param serviceName string = 'store'
 param identityName string = '${serviceName}Identity'
@@ -32,6 +33,10 @@ module app '../core/host/container-app-upsert.bicep' = {
       {
         name: 'ASPNETCORE_ENVIRONMENT'
         value: 'Development'
+      }
+      {
+        name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        value: applicationInsightsConnectionString
       }
       {
         name: 'PRODUCTS_URL'

@@ -81,6 +81,7 @@ module store 'app/store.bicep' = {
     exists: storeAppExists
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
+    applicationInsightsConnectionString: monitoring.outputs.applicationInsightsConnectionString
   }
 }
 
@@ -94,6 +95,7 @@ module proxy 'app/proxy.bicep' = {
     exists: proxyAppExists
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
+    applicationInsightsConnectionString: monitoring.outputs.applicationInsightsConnectionString
   }
 }
 
@@ -107,6 +109,7 @@ module orderprocessor 'app/orderprocessor.bicep' = {
     exists: orderprocessorAppExists
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
+    applicationInsightsConnectionString: monitoring.outputs.applicationInsightsConnectionString
   }
 }
 
@@ -120,6 +123,7 @@ module products 'app/products.bicep' = {
     exists: productsAppExists
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
+    applicationInsightsConnectionString: monitoring.outputs.applicationInsightsConnectionString
   }
 }
 
@@ -133,6 +137,7 @@ module orders 'app/orders.bicep' = {
     exists: ordersAppExists
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
+    applicationInsightsConnectionString: monitoring.outputs.applicationInsightsConnectionString
     serviceBinds: [
       {
         serviceId: postgres.outputs.id

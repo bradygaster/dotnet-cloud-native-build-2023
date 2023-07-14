@@ -1,6 +1,7 @@
 ﻿using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +16,7 @@ public static class DiagnosticServiceCollectionExtensions
 
         services
             .AddOpenTelemetry()
+            .UseAzureMonitor()
                 .WithMetrics(metrics =>
                 {
                     metrics

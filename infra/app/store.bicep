@@ -10,16 +10,6 @@ param identityName string = '${serviceName}Identity'
 @description('An array of service binds')
 param serviceBinds array = []
 
-// identity
-module identity '../core/security/user-assigned-identity.bicep' = {
-  scope: resourceGroup()
-  name: '${serviceName}Identity'
-  params: {
-    identityName: identityName
-    location: location
-  }
-}
-
 module app '../core/host/container-app-upsert.bicep' = {
   name: '${serviceName}-container-app'
   dependsOn: [
@@ -34,6 +24,10 @@ module app '../core/host/container-app-upsert.bicep' = {
     exists: exists
     containerAppsEnvironmentName: containerAppsEnvironmentName
     containerRegistryName: containerRegistryName
+    serviceBinds: serviceBinds
+    ingressEnabled: true
+    external: false
+    targetPort: 8080
     env: [
       {
         name: 'ASPNETCORE_ENVIRONMENT'
@@ -48,13 +42,19 @@ module app '../core/host/container-app-upsert.bicep' = {
         value: 'http://orders'
       }
     ]
-    ingressEnabled: true
-    external: true
-    targetPort: 8080
-    serviceBinds: serviceBinds
+  }
+}
+
+module identity '../core/security/user-assigned-identity.bicep' = {
+  scope: resourceGroup()
+  name: '${serviceName}Identity'
+  params: {
+    identityName: identityName
+    location: location
   }
 }
 
 output SERVICE_STORE_NAME string = app.outputs.name
 output SERVICE_STORE_URI string = app.outputs.uri
 output SERVICE_STORE_IMAGE_NAME string = app.outputs.imageName
+

@@ -22,6 +22,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store", "Store\Store.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diagnostics", "Diagnostics\Diagnostics.csproj", "{3037C1F1-2FF4-4E89-955F-DD3917DA39B2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{2DD38B4E-4407-4329-96D0-1999D1AB2BDD}"
+	ProjectSection(SolutionItems) = preProject
+		..\infra\main.bicep = ..\infra\main.bicep
+		..\infra\app\orderprocessor.bicep = ..\infra\app\orderprocessor.bicep
+		..\infra\app\orders.bicep = ..\infra\app\orders.bicep
+		..\infra\app\products.bicep = ..\infra\app\products.bicep
+		..\infra\app\proxy.bicep = ..\infra\app\proxy.bicep
+		..\infra\app\store.bicep = ..\infra\app\store.bicep
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

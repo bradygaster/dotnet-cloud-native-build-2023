@@ -34,7 +34,6 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   tags: tags
 }
 
-// Container apps host (including container registry)
 module containerApps 'core/host/container-apps.bicep' = {
   name: 'container-apps'
   scope: resourceGroup
@@ -47,7 +46,6 @@ module containerApps 'core/host/container-apps.bicep' = {
   }
 }
 
-// Monitor application with Azure Monitor
 module monitoring 'core/monitor/monitoring.bicep' = {
   name: 'monitoring'
   scope: resourceGroup
@@ -60,21 +58,6 @@ module monitoring 'core/monitor/monitoring.bicep' = {
   }
 }
 
-// this launches a redis instance inside of the ACA env
-module redis 'core/host/container-app.bicep' = {
-  name: 'redis'
-  scope: resourceGroup
-  params: {
-    name: 'redis'
-    location: location
-    tags: tags
-    containerAppsEnvironmentName: containerApps.outputs.environmentName
-    containerRegistryName: containerApps.outputs.registryName
-    serviceType: 'redis'
-  }
-}
-
-// this launches a postgres instance inside of the ACA env
 module postgres 'core/host/container-app.bicep' = {
   name: 'postgres'
   scope: resourceGroup
@@ -88,7 +71,6 @@ module postgres 'core/host/container-app.bicep' = {
   }
 }
 
-// front end
 module store 'app/store.bicep' = {
   name: 'store'
   scope: resourceGroup
@@ -102,7 +84,6 @@ module store 'app/store.bicep' = {
   }
 }
 
-// yarp
 module proxy 'app/proxy.bicep' = {
   name: 'proxy'
   scope: resourceGroup
@@ -111,13 +92,11 @@ module proxy 'app/proxy.bicep' = {
     location: location
     tags: tags
     exists: proxyAppExists
-    allowExternalIngress: true
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
   }
 }
 
-// order processor
 module orderprocessor 'app/orderprocessor.bicep' = {
   name: 'orderprocessor'
   scope: resourceGroup
@@ -126,13 +105,11 @@ module orderprocessor 'app/orderprocessor.bicep' = {
     location: location
     tags: tags
     exists: orderprocessorAppExists
-    allowExternalIngress: false
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
   }
 }
 
-// products api
 module products 'app/products.bicep' = {
   name: 'products'
   scope: resourceGroup
@@ -141,14 +118,11 @@ module products 'app/products.bicep' = {
     location: location
     tags: tags
     exists: productsAppExists
-    allowExternalIngress: false
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
-    targetPort: 8080
   }
 }
 
-// orders api
 module orders 'app/orders.bicep' = {
   name: 'orders'
   scope: resourceGroup
@@ -157,7 +131,6 @@ module orders 'app/orders.bicep' = {
     location: location
     tags: tags
     exists: ordersAppExists
-    allowExternalIngress: true // todo: turn this to false once we're good here
     containerAppsEnvironmentName: containerApps.outputs.environmentName
     containerRegistryName: containerApps.outputs.registryName
     serviceBinds: [

@@ -5,50 +5,60 @@
 @inject Products.ProductsClient _productsClient;
 @inject OrderServiceClient _orderClient;
 
-<PageTitle>Products</PageTitle>
+<PageTitle>Contoso Online</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">Contoso Online</MudText>
 <MudText Class="mb-8">Welcome to Contoso Online</MudText>
 <MudText Class="m-5">Below you will find all of the products currently in stock. Use the "Order" button below to add it to your cart, then click the "Submit Order" button to send the order to us to fulfill it.</MudText>
 
-<MudTable Items="_products" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" T="Product">
-    <HeaderContent>
-        <MudTh>Product</MudTh>
-        <MudTh>Price</MudTh>
-        <MudTh>In Stock?</MudTh>
-        <MudTh>Order</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd>@context.Name</MudTd>
-        <MudTd>@context.Price</MudTd>
-        <MudTd>@context.ItemsInStock</MudTd>
-        <MudTd>
-            @if(!_cart.Any(x => x.ProductId == context.ProductId))
-            {
-                <MudButton Style="width: 200px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">Add to Cart</MudButton>
-            }
-            else
-            {
-                <MudButton Style="width: 200px;" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">@(_cart.First(x => x.ProductId == context.ProductId).Quantity) in cart</MudButton>
-            }
-        </MudTd>
-    </RowTemplate>
-    <FooterContent>
-        <MudTd>
-            <MudButton Disabled="@_processing" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => SubmitOrder())">
-                @if (_processing)
+@if (_grpcWorking)
+{
+    <MudTable Items="_products" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" T="Product">
+        <HeaderContent>
+            <MudTh>Product</MudTh>
+            <MudTh>Price</MudTh>
+            <MudTh>In Stock?</MudTh>
+            <MudTh>Order</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Name</MudTd>
+            <MudTd>@context.Price</MudTd>
+            <MudTd>@context.ItemsInStock</MudTd>
+            <MudTd>
+                @if (!_cart.Any(x => x.ProductId == context.ProductId))
                 {
-                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                    <MudText Class="ms-2">Processing</MudText>
+                    <MudButton Style="width: 200px;" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">Add to Cart</MudButton>
                 }
                 else
                 {
-                    <MudText>Submit Order</MudText>
+                    <MudButton Style="width: 200px;" Color="Color.Success" Variant="Variant.Filled" OnClick="@(() => AddToCart(context))">@(_cart.First(x => x.ProductId == context.ProductId).Quantity) in cart</MudButton>
                 }
-            </MudButton>
-        </MudTd>
-    </FooterContent>
-</MudTable>
+            </MudTd>
+        </RowTemplate>
+        <FooterContent>
+            <MudTd>
+                <MudButton Disabled="@_processing" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(() => SubmitOrder())">
+                    @if (_processing)
+                    {
+                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        <MudText Class="ms-2">Processing</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Submit Order</MudText>
+                    }
+                </MudButton>
+            </MudTd>
+        </FooterContent>
+    </MudTable>
+}
+else
+{
+    <MudText Typo="Typo.h3" GutterBottom="true">Product gRPC Error</MudText>
+    <MudText Typo="Typo.body1" GutterBottom="true">@_error</MudText>
+
+}
+
 
 @code
 {
@@ -56,12 +66,24 @@
     private List<CartItem> _cart = new List<CartItem>();
     private bool _shouldRender;
     private bool _processing = false;
+    private bool _grpcWorking = false;
+    private string? _error = null;
 
     override protected bool ShouldRender() => _shouldRender;
 
     override protected async Task OnInitializedAsync()
     {
-        await GetProducts();
+        try
+        {
+            await GetProducts();
+            _grpcWorking = true;
+        }
+        catch(Exception ex)
+        {
+            _error = ex.ToString();
+            _grpcWorking = false;
+        }
+        
         _shouldRender = true;
     }
 

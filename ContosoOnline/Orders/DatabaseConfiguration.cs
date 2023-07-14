@@ -12,19 +12,31 @@ internal static class DatabaseConfiguration
         {
             var configuration = sp.GetRequiredService<IConfiguration>();
 
-            var connectionString = configuration.GetConnectionString("OrdersDb") ?? throw new InvalidDataException("Missing connection string");
+            var connectionString = configuration.GetConnectionString("OrdersDb");
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                var pgHost = configuration["POSTGRES_HOST"];
+                var pgPassword = configuration["POSTGRES_PASSWORD"];
+                var pgUser = configuration["POSTGRES_USERNAME"];
+                var pgDatabase = configuration["POSTGRES_DATABASE"];
+                
+                connectionString = $"Host={pgHost};Database={pgDatabase};Username={pgUser};Password={pgPassword};Timeout=300";
+
+                if (string.IsNullOrEmpty(pgUser) && string.IsNullOrEmpty(pgHost))
+                {
+                    throw new InvalidDataException("Missing postgres connection string or environment variables");
+                }
+            }
 
             return new NpgsqlSlimDataSourceBuilder(connectionString).Build();
         });
 
         services.AddHostedService<DatabaseInitializer>();
-
         services.AddSingleton<IOrdersDb, OrdersDb>();
-
         services.AddDbResiliencePolicy<List<CartItemDatabaseRecord>>("cart");
         services.AddDbResiliencePolicy<List<OrderDatabaseRecord>>("order");
         services.AddDbResiliencePolicy<bool>("order-update");
-
         services.AddSingleton<DatabaseRetryPolicies>();
 
         return services;

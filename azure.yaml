@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: ContosoOnline
+metadata:
+  template: dotnet-contoso-online
+services:
+  store:
+    project: ./ContosoOnline/Store
+    host: containerapp
+    language: dotnet
+    module: app/store
+    docker:
+      path: ./Dockerfile
+      context: ../../
+  orders:
+    project: ./ContosoOnline/Orders
+    host: containerapp
+    language: dotnet
+    module: app/orders
+    docker:
+      path: ./Dockerfile
+      context: ../../
+  products:
+    project: ./ContosoOnline/Products
+    host: containerapp
+    language: dotnet
+    module: app/products
+    docker:
+      path: ./Dockerfile
+      context: ../../
+  proxy:
+    project: ./ContosoOnline/Proxy
+    host: containerapp
+    language: dotnet
+    module: app/proxy
+    docker:
+      path: ./Dockerfile
+      context: ../../
+  orderprocessor:
+    project: ./ContosoOnline/OrderProcessor
+    host: containerapp
+    language: dotnet
+    module: app/orderprocessor
+    docker:
+      path: ./Dockerfile
+      context: ../../

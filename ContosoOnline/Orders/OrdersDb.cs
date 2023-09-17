@@ -1,5 +1,8 @@
 ﻿using Npgsql;
-using Systems.Collections.Generic;
+using System.Collections.Generic;
+using System.Threading;
+﻿using System.Data;
+using Nanorm;
 
 namespace Orders;
 
@@ -12,43 +15,36 @@ public interface IOrdersDb
     public Task<CartItemDatabaseRecord?> AddCartItemAsync(Guid orderId, string productId, int quantity, CancellationToken cancellationToken);
     public Task<bool> MarkOrderShippedAsync(Guid orderId);
 }
+public class OrdersDb(NpgsqlDataSource db) : IOrdersDb
 
-public class OrdersDb(NpgsqlDataSource db, DatabaseRetryPolicies policies) : IOrdersDb
 {
     public Task<CartItemDatabaseRecord?> AddCartItemAsync(Guid orderId, string productId, int quantity, CancellationToken cancellationToken)
     {
         return db.QuerySingleAsync<CartItemDatabaseRecord>(
-                $"INSERT INTO carts({nameof(CartItemDatabaseRecord.OrderId)}, {nameof(CartItemDatabaseRecord.ProductId)}, {nameof(CartItemDatabaseRecord.Quantity)}) Values($1, $2, $3) RETURNING *",
-                cancellationToken,
-                orderId.AsTypedDbParameter(),
-                productId.AsTypedDbParameter(),
-                quantity.AsTypedDbParameter());
+                $"INSERT INTO carts({nameof(CartItemDatabaseRecord.OrderId)}, {nameof(CartItemDatabaseRecord.ProductId)}, {nameof(CartItemDatabaseRecord.Quantity)}) Values({orderId}, {productId}, {quantity}) RETURNING *",
+                cancellationToken);
     }
 
     public Task<OrderDatabaseRecord?> AddOrderAsync(Guid orderId, CancellationToken cancellationToken)
     {
         return db.QuerySingleAsync<OrderDatabaseRecord>(
-               $"INSERT INTO orders({nameof(OrderDatabaseRecord.OrderedAt)}, {nameof(OrderDatabaseRecord.OrderId)}, {nameof(OrderDatabaseRecord.HasShipped)}) Values(CURRENT_DATE, $1, false) RETURNING *",
-               cancellationToken,
-               orderId.AsTypedDbParameter());
+               $"INSERT INTO orders({nameof(OrderDatabaseRecord.OrderedAt)}, {nameof(OrderDatabaseRecord.OrderId)}, {nameof(OrderDatabaseRecord.HasShipped)}) Values(CURRENT_DATE, {orderId}, false) RETURNING *",
+               cancellationToken);
     }
 
     public Task<List<CartItemDatabaseRecord>> GetCartItemsAsync()
     {
-        return policies.CartItemListPolicy.ExecuteAsync(() =>
-            db.QueryAsync<CartItemDatabaseRecord>("SELECT * FROM carts").ToListAsync());
+        return db.QueryAsync<CartItemDatabaseRecord>("SELECT * FROM carts").ToListAsync();
+    
     }
 
     public Task<List<OrderDatabaseRecord>> GetUnshippedOrdersAsync()
     {
-        return policies.OrderListPolicy.ExecuteAsync(() => 
-            db.QueryAsync<OrderDatabaseRecord>("SELECT * FROM orders WHERE hasshipped = false").ToListAsync());
+        return db.QueryAsync<OrderDatabaseRecord>("SELECT * FROM orders WHERE hasshipped = false").ToListAsync();
     }
 
-    public Task<bool> MarkOrderShippedAsync(Guid orderId)
+    public async Task<bool> MarkOrderShippedAsync(Guid orderId)
     {
-        return policies.MarkOrderUpdatedPolicy.ExecuteAsync(async () =>
-            await db.ExecuteAsync("UPDATE orders SET hasshipped = true WHERE orderid = $1", orderId.AsTypedDbParameter()) == 1
-        );
+        return await db.ExecuteAsync("UPDATE orders SET hasshipped = true WHERE orderid = {orderId}") == 1;
     }
 }

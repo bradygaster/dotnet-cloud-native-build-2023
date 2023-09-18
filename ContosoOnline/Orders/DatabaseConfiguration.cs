@@ -34,32 +34,32 @@ internal static class DatabaseConfiguration
 
         services.AddHostedService<DatabaseInitializer>();
         services.AddSingleton<IOrdersDb, OrdersDb>();
-        services.AddDbResiliencePolicy<List<CartItemDatabaseRecord>>("cart");
-        services.AddDbResiliencePolicy<List<OrderDatabaseRecord>>("order");
-        services.AddDbResiliencePolicy<bool>("order-update");
-        services.AddSingleton<DatabaseRetryPolicies>();
+        //services.AddDbResiliencePolicy<List<CartItemDatabaseRecord>>("cart");
+        //services.AddDbResiliencePolicy<List<OrderDatabaseRecord>>("order");
+        //services.AddDbResiliencePolicy<bool>("order-update");
+        //services.AddSingleton<DatabaseRetryPolicies>();
 
         return services;
     }
 
-    public static IResiliencePipelineBuilder<T> AddDbResiliencePolicy<T>(this IServiceCollection services, string policyName)
-    {
-        return services.AddResiliencePipeline<T>(policyName)
-                       .AddRetryPolicy("db-retry")
-                       .AddCircuitBreakerPolicy("db-cb");
-    }
+    // public static IResiliencePipelineBuilder<T> AddDbResiliencePolicy<T>(this IServiceCollection services, string policyName)
+    // {
+    //     return services.AddResiliencePipeline<T>(policyName)
+    //                    .AddRetryPolicy("db-retry")
+    //                    .AddCircuitBreakerPolicy("db-cb");
+    // }
 }
 
-public class DatabaseRetryPolicies
-{
-    public DatabaseRetryPolicies(IResiliencePipelineProvider provider)
-    {
-        MarkOrderUpdatedPolicy = provider.GetPipeline<bool>("order-update");
-        CartItemListPolicy = provider.GetPipeline<List<CartItemDatabaseRecord>>("cart");
-        OrderListPolicy = provider.GetPipeline<List<OrderDatabaseRecord>>("order");
-    }
+// public class DatabaseRetryPolicies
+// {
+//     public DatabaseRetryPolicies(IResiliencePipelineProvider provider)
+//     {
+//         MarkOrderUpdatedPolicy = provider.GetPipeline<bool>("order-update");
+//         CartItemListPolicy = provider.GetPipeline<List<CartItemDatabaseRecord>>("cart");
+//         OrderListPolicy = provider.GetPipeline<List<OrderDatabaseRecord>>("order");
+//     }
 
-    public IAsyncPolicy<bool> MarkOrderUpdatedPolicy { get; }
-    public IAsyncPolicy<List<CartItemDatabaseRecord>> CartItemListPolicy { get; }
-    public IAsyncPolicy<List<OrderDatabaseRecord>> OrderListPolicy { get; }
-}
+//     public IAsyncPolicy<bool> MarkOrderUpdatedPolicy { get; }
+//     public IAsyncPolicy<List<CartItemDatabaseRecord>> CartItemListPolicy { get; }
+//     public IAsyncPolicy<List<OrderDatabaseRecord>> OrderListPolicy { get; }
+// }

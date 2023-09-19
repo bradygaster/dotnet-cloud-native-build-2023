@@ -84,8 +84,8 @@ services:
       dockerfile: ./ContosoOnline/OrderProcessor/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - PRODUCTS_URL=http://products
-      - ORDERS_URL=http://orders
+      - PRODUCTS_URL=http://products:8080
+      - ORDERS_URL=http://orders:8080
       - ZIPKIN_URL=http://zipkin:9411
     depends_on:
       - products

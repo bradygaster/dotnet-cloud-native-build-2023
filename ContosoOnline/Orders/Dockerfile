@@ -1,7 +1,7 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-preview AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0.0-rc.1 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.100-rc.1 AS build
 WORKDIR /src
 COPY ["NuGet.config", "."]
 COPY ["ContosoOnline/Orders/Orders.csproj", "Orders/"]

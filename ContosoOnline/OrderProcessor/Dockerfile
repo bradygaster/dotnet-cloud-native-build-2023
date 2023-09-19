@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0.0-rc.1-nanoserver-1809 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0.0-rc.1 AS base
 WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0.100-rc.1 AS build

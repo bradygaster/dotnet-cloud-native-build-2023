@@ -15,27 +15,29 @@ public interface IOrdersDb
     public Task<CartItemDatabaseRecord?> AddCartItemAsync(Guid orderId, string productId, int quantity, CancellationToken cancellationToken);
     public Task<bool> MarkOrderShippedAsync(Guid orderId);
 }
-public class OrdersDb(NpgsqlDataSource db) : IOrdersDb
-
+public class OrdersDb(NpgsqlDataSource db, ILogger<OrdersDb> logger) : IOrdersDb
 {
     public Task<CartItemDatabaseRecord?> AddCartItemAsync(Guid orderId, string productId, int quantity, CancellationToken cancellationToken)
     {
+        string sql = $"INSERT INTO carts(OrderId, ProductId, Quantity) Values('{orderId}', '{productId}', '{quantity}') RETURNING *";
+        logger.LogInformation(sql);
         return db.QuerySingleAsync<CartItemDatabaseRecord>(
-                $"INSERT INTO carts({nameof(CartItemDatabaseRecord.OrderId)}, {nameof(CartItemDatabaseRecord.ProductId)}, {nameof(CartItemDatabaseRecord.Quantity)}) Values({orderId}, {productId}, {quantity}) RETURNING *",
+                sql,
                 cancellationToken);
     }
 
     public Task<OrderDatabaseRecord?> AddOrderAsync(Guid orderId, CancellationToken cancellationToken)
     {
+        string sql = $"INSERT INTO orders(OrderedAt,OrderId, HasShipped) Values(CURRENT_DATE, '{orderId}', false) RETURNING *";
+        logger.LogInformation(sql);
         return db.QuerySingleAsync<OrderDatabaseRecord>(
-               $"INSERT INTO orders({nameof(OrderDatabaseRecord.OrderedAt)}, {nameof(OrderDatabaseRecord.OrderId)}, {nameof(OrderDatabaseRecord.HasShipped)}) Values(CURRENT_DATE, {orderId}, false) RETURNING *",
+               sql,
                cancellationToken);
     }
 
     public Task<List<CartItemDatabaseRecord>> GetCartItemsAsync()
     {
         return db.QueryAsync<CartItemDatabaseRecord>("SELECT * FROM carts").ToListAsync();
-    
     }
 
     public Task<List<OrderDatabaseRecord>> GetUnshippedOrdersAsync()
@@ -45,6 +47,8 @@ public class OrdersDb(NpgsqlDataSource db) : IOrdersDb
 
     public async Task<bool> MarkOrderShippedAsync(Guid orderId)
     {
-        return await db.ExecuteAsync("UPDATE orders SET hasshipped = true WHERE orderid = {orderId}") == 1;
+        string sql = $"UPDATE orders SET hasshipped = true WHERE orderid = '{orderId}'";
+        logger.LogInformation(sql);
+        return await db.ExecuteAsync(sql) == 1;
     }
 }

@@ -1,10 +1,10 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-preview AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0.0-rc.1 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 8080
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.100-rc.1 AS build
 WORKDIR /src
 COPY ["NuGet.config", "."]
 COPY ["ContosoOnline/Products/Products.csproj", "Products/"]

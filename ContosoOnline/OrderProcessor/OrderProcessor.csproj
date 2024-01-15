@@ -15,15 +15,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
-        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.0.0-rc.1.23453.1" />
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
-        <PackageReference Include="Microsoft.Bcl.TimeProvider" Version="8.0.0-rc.1.23409.17" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0-rc.1.23419.4" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0-rc.1.23419.4" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-rc.1.23419.4" />
-        <PackageReference Include="Microsoft.Extensions.Diagnostics.ExceptionSummarization" Version="8.0.0-rc.1.23453.1" />
-        <PackageReference Include="Microsoft.Extensions.AmbientMetadata.Application" Version="8.0.0-rc.1.23453.1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
+        <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.1.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+        <PackageReference Include="Microsoft.Bcl.TimeProvider" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.ExceptionSummarization" Version="8.1.0" />
+        <PackageReference Include="Microsoft.Extensions.AmbientMetadata.Application" Version="8.1.0" />
 
         <!--
         Microsoft.Bcl.TimeProvider 8.0.0-rc.1.23419.4

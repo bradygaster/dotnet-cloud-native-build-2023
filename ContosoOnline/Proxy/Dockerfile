@@ -1,7 +1,7 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0.0-rc.1 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0.1 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.100-rc.1 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.101 AS build
 WORKDIR /src
 COPY ["NuGet.config", "."]
 COPY ["ContosoOnline/Proxy/Proxy.csproj", "Proxy/"]

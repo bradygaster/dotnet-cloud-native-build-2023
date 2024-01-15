@@ -12,10 +12,10 @@
 
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Resilience" Version="8.0.0-rc.1.23453.1" />
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
-        <PackageReference Include="Nanorm.Npgsql" Version="0.0.6" />
-        <PackageReference Include="Npgsql" Version="8.0.0-preview.4" />
+        <PackageReference Include="Microsoft.Extensions.Resilience" Version="8.1.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+        <PackageReference Include="Nanorm.Npgsql" Version="0.1.2" />
+        <PackageReference Include="Npgsql" Version="8.0.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 

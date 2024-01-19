@@ -1,6 +1,5 @@
-﻿﻿using System.Data;
-using Nanorm;
-using Npgsql;
+﻿using Nanorm;
+using System.Data;
 
 namespace Orders;
 

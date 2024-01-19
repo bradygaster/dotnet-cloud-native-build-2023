@@ -21,6 +21,8 @@ public class DatabaseInitializer : IHostedService
 
     private async Task Initialize(CancellationToken cancellationToken = default)
     {
+        await Task.Delay(3000);
+
         // NOTE: Npgsql removes the password from the connection string
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -31,9 +33,9 @@ public class DatabaseInitializer : IHostedService
         var create = $"""
                 CREATE TABLE IF NOT EXISTS public.orders
                 (
-                    {nameof(OrderDatabaseRecord.OrderId)} uuid PRIMARY KEY,
-                    {nameof(OrderDatabaseRecord.OrderedAt)} date NOT NULL,
-                    {nameof(OrderDatabaseRecord.HasShipped)} boolean NOT NULL DEFAULT false
+                    {nameof(OrderDatabaseRecord.OrderId).ToLower()} uuid PRIMARY KEY,
+                    {nameof(OrderDatabaseRecord.OrderedAt).ToLower()} date NOT NULL,
+                    {nameof(OrderDatabaseRecord.HasShipped).ToLower()} boolean NOT NULL DEFAULT false
                 );
                 DELETE FROM public.orders;
                 """;
@@ -43,10 +45,10 @@ public class DatabaseInitializer : IHostedService
         var createCarts = $"""
                 CREATE TABLE IF NOT EXISTS public.carts
                 (
-                    {nameof(CartItemDatabaseRecord.CartItemId)} SERIAL PRIMARY KEY,
-                    {nameof(CartItemDatabaseRecord.OrderId)} uuid NOT NULL,
-                    {nameof(CartItemDatabaseRecord.ProductId)} text NOT NULL,
-                    {nameof(CartItemDatabaseRecord.Quantity)} int NOT NULL DEFAULT 1
+                    {nameof(CartItemDatabaseRecord.CartItemId).ToLower()} SERIAL PRIMARY KEY,
+                    {nameof(CartItemDatabaseRecord.OrderId).ToLower()} uuid NOT NULL,
+                    {nameof(CartItemDatabaseRecord.ProductId).ToLower()} text NOT NULL,
+                    {nameof(CartItemDatabaseRecord.Quantity).ToLower()} int NOT NULL DEFAULT 1
                 );
                 DELETE FROM public.carts;
                 """;
@@ -68,9 +70,9 @@ public class DatabaseInitializer : IHostedService
                 var insertOrderSql = $"""
                 INSERT INTO
                     public.orders (
-                        {nameof(OrderDatabaseRecord.OrderId)}, 
-                        {nameof(OrderDatabaseRecord.OrderedAt)}, 
-                        {nameof(OrderDatabaseRecord.HasShipped)}
+                        {nameof(OrderDatabaseRecord.OrderId).ToLower()}, 
+                        {nameof(OrderDatabaseRecord.OrderedAt).ToLower()}, 
+                        {nameof(OrderDatabaseRecord.HasShipped).ToLower()}
                     )
                 VALUES
                     ('{orderId}', CURRENT_DATE, false);
@@ -88,9 +90,9 @@ public class DatabaseInitializer : IHostedService
                     var insertCartItemSql = $"""
                     INSERT INTO
                         public.carts (
-                            {nameof(CartItemDatabaseRecord.OrderId)},
-                            {nameof(CartItemDatabaseRecord.ProductId)},
-                            {nameof(CartItemDatabaseRecord.Quantity)}
+                            {nameof(CartItemDatabaseRecord.OrderId).ToLower()},
+                            {nameof(CartItemDatabaseRecord.ProductId).ToLower()},
+                            {nameof(CartItemDatabaseRecord.Quantity).ToLower()}
                         )
                     VALUES
                         ('{orderId}', '{cartItem}', {Random.Shared.Next(1, 10)})

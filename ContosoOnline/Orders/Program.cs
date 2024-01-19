@@ -1,11 +1,17 @@
 using Orders;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDatabase();
+
+builder.AddServiceDefaults();
+builder.AddNpgsqlDataSource("ordersDb");
+builder.Services.AddHostedService<DatabaseInitializer>();
+builder.Services.AddSingleton<IOrdersDb, OrdersDb>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.MapGet("/", () => "Orders");
 

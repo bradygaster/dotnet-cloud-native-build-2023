@@ -1,8 +1,5 @@
-﻿using Npgsql;
-using System.Collections.Generic;
-using System.Threading;
-﻿using System.Data;
-using Nanorm;
+﻿using Nanorm;
+using Npgsql;
 
 namespace Orders;
 
@@ -10,7 +7,6 @@ public interface IOrdersDb
 {
     public Task<List<OrderDatabaseRecord>> GetUnshippedOrdersAsync();
     public Task<List<CartItemDatabaseRecord>> GetCartItemsAsync();
-
     public Task<OrderDatabaseRecord?> AddOrderAsync(Guid orderId, CancellationToken cancellationToken);
     public Task<CartItemDatabaseRecord?> AddCartItemAsync(Guid orderId, string productId, int quantity, CancellationToken cancellationToken);
     public Task<bool> MarkOrderShippedAsync(Guid orderId);

@@ -27,6 +27,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\ContosoOnline.ServiceDefaults\ContosoOnline.ServiceDefaults.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Protobuf Include="Protos\products.proto">
             <GrpcServices>Client</GrpcServices>
         </Protobuf>

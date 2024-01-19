@@ -1,6 +1,4 @@
-﻿namespace OrderProcessor;
-
-public class OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClient> logger)
+﻿public class OrderServiceClient(HttpClient httpClient, ILogger<OrderServiceClient> logger)
 {
     public async Task<IEnumerable<Order>> GetOrdersAsync(CancellationToken cancellationToken = default)
     {

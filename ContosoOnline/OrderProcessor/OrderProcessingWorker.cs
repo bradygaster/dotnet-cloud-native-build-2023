@@ -10,7 +10,6 @@ public class OrderProcessingWorker(ILogger<OrderProcessingWorker> logger,
         while (!stoppingToken.IsCancellationRequested)
         {
             logger.LogInformation($"Worker running at: {DateTime.UtcNow}");
-            logger.LogInformation($"Using Order URL: {configuration["ORDERS_URL"]} and Products URL: {configuration["PRODUCTS_URL"]}");
 
             await using var scope = serviceScopeFactory.CreateAsyncScope();
 

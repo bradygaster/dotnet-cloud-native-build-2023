@@ -24,25 +24,6 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Diagnostics.ExceptionSummarization" Version="8.1.0" />
         <PackageReference Include="Microsoft.Extensions.AmbientMetadata.Application" Version="8.1.0" />
-
-        <!--
-        Microsoft.Bcl.TimeProvider 8.0.0-rc.1.23419.4
-        Microsoft.Extensions.Configuration.Abstractions
-        Microsoft.Extensions.DependencyInjection.Abstractions
-        Microsoft.Extensions.Hosting.Abstractions
-        Microsoft.Extensions.Http.Polly
-        Microsoft.Extensions.Logging.Abstractions
-        Microsoft.Extensions.Logging.Configuration
-        Microsoft.Extensions.ObjectPool
-        Microsoft.Extensions.Options
-        Microsoft.Extensions.Options.ConfigurationExtensions
-        System.Diagnostics.DiagnosticSource
-        System.IO.Hashing 8.0.0-rc.1.23409.17
-        -->
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Diagnostics\Diagnostics.csproj" />
     </ItemGroup>
 
     <ItemGroup>

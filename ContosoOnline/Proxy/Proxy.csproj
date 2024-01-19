@@ -13,8 +13,4 @@
         <PackageReference Include="Yarp.ReverseProxy" Version="2.1.0" />
     </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\Diagnostics\Diagnostics.csproj" />
-    </ItemGroup>
-
 </Project>

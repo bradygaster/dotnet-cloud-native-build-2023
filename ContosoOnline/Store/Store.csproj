@@ -21,10 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Diagnostics\Diagnostics.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Protobuf Include="Protos\products.proto" GrpcServices="Client" />
     </ItemGroup>
 

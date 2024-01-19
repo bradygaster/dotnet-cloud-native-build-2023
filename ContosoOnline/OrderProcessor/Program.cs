@@ -22,11 +22,6 @@ builder.Services.AddHttpClient<OrderServiceClient>(c =>
 //.AddStandardResilienceHandler() // think this has a bug for workers
 ;
 
-builder.Services.AddObservability("OrderProcessor", builder.Configuration, tracing =>
-{
-    tracing.AddWorkerInstrumentation();
-});
-
 builder.Services.AddSingleton<Instrumentation>();
 builder.Services.AddHostedService<OrderProcessingWorker>();
 builder.Services.AddScoped<OrderProcessingRequest>();

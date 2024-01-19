@@ -1,10 +1,7 @@
-using Microsoft.Extensions.Http.Resilience;
 using MudBlazor.Services;
 using Store;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddObservability("StoreUX", builder.Configuration);
 
 builder.Services.AddGrpcClient<Products.Products.ProductsClient>(c =>
 {
@@ -38,8 +35,6 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
-
-app.MapObservability();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 

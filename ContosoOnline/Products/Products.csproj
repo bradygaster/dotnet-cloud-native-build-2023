@@ -19,4 +19,8 @@
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\ContosoOnline.ServiceDefaults\ContosoOnline.ServiceDefaults.csproj" />
+    </ItemGroup>
+
 </Project>

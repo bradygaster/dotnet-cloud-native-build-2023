@@ -1,106 +1,29 @@
-﻿using Npgsql;
-using Nanorm;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Orders;
 
-public class DatabaseInitializer : IHostedService
+public class DatabaseInitializer(IServiceProvider serviceProvider, ILogger<DatabaseInitializer> logger) : IHostedService
 {
-    private const string Variable = "SEED_DATABASE";
-    private readonly NpgsqlDataSource _db;
-    private readonly ILogger<DatabaseInitializer> _logger;
-
-    public DatabaseInitializer(NpgsqlDataSource db, ILogger<DatabaseInitializer> logger)
-    {
-        _db = db;
-        _logger = logger;
-    }
+    public const string ActivitySourceName = "Migrations";
+    private readonly ActivitySource _activitySource = new(ActivitySourceName);
 
     public async Task StartAsync(CancellationToken cancellationToken) => await Initialize(cancellationToken);
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    private async Task Initialize(CancellationToken cancellationToken = default)
+    private async Task Initialize(CancellationToken cancellationToken)
     {
-        await Task.Delay(3000);
+        using var scope = serviceProvider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<OrdersDbContext>();
 
-        // NOTE: Npgsql removes the password from the connection string
-        if (_logger.IsEnabled(LogLevel.Information))
-        {
-            _logger.LogInformation("Ensuring database exists and is up to date");
-        }
+        using var activity = _activitySource.StartActivity("Initializing catalog database", ActivityKind.Client);
 
-        // create the orders and cart tables
-        var create = $"""
-                CREATE TABLE IF NOT EXISTS public.orders
-                (
-                    {nameof(OrderDatabaseRecord.OrderId).ToLower()} uuid PRIMARY KEY,
-                    {nameof(OrderDatabaseRecord.OrderedAt).ToLower()} date NOT NULL,
-                    {nameof(OrderDatabaseRecord.HasShipped).ToLower()} boolean NOT NULL DEFAULT false
-                );
-                DELETE FROM public.orders;
-                """;
+        var sw = Stopwatch.StartNew();
 
-        await _db.ExecuteAsync(create, cancellationToken);
+        var strategy = dbContext.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(dbContext.Database.MigrateAsync, cancellationToken);
 
-        var createCarts = $"""
-                CREATE TABLE IF NOT EXISTS public.carts
-                (
-                    {nameof(CartItemDatabaseRecord.CartItemId).ToLower()} SERIAL PRIMARY KEY,
-                    {nameof(CartItemDatabaseRecord.OrderId).ToLower()} uuid NOT NULL,
-                    {nameof(CartItemDatabaseRecord.ProductId).ToLower()} text NOT NULL,
-                    {nameof(CartItemDatabaseRecord.Quantity).ToLower()} int NOT NULL DEFAULT 1
-                );
-                DELETE FROM public.carts;
-                """;
-
-        await _db.ExecuteAsync(createCarts, cancellationToken);
-
-        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Variable))
-            && Environment.GetEnvironmentVariable("SEED_DATABASE")?.ToLowerInvariant() == "true")
-        {
-            // random products
-            var randomProductIDs = new string[] { "01", "02", "03", "04", "05" };
-
-            // insert some random records
-            for (int i = 0; i < 10; i++)
-            {
-                var orderId = Guid.NewGuid().ToString();
-
-                // make an order
-                var insertOrderSql = $"""
-                INSERT INTO
-                    public.orders (
-                        {nameof(OrderDatabaseRecord.OrderId).ToLower()}, 
-                        {nameof(OrderDatabaseRecord.OrderedAt).ToLower()}, 
-                        {nameof(OrderDatabaseRecord.HasShipped).ToLower()}
-                    )
-                VALUES
-                    ('{orderId}', CURRENT_DATE, false);
-                """;
-
-                await _db.ExecuteAsync(insertOrderSql, cancellationToken);
-
-                // add some cart items to associate with the order
-                var cart = new List<string>();
-                randomProductIDs.OrderBy(x => Guid.NewGuid()).Take(3).ToList().ForEach(x => cart.Add(x));
-
-                foreach (var cartItem in cart)
-                {
-                    // add the line item for the order
-                    var insertCartItemSql = $"""
-                    INSERT INTO
-                        public.carts (
-                            {nameof(CartItemDatabaseRecord.OrderId).ToLower()},
-                            {nameof(CartItemDatabaseRecord.ProductId).ToLower()},
-                            {nameof(CartItemDatabaseRecord.Quantity).ToLower()}
-                        )
-                    VALUES
-                        ('{orderId}', '{cartItem}', {Random.Shared.Next(1, 10)})
-                    """;
-
-                    await _db.ExecuteAsync(insertCartItemSql, cancellationToken);
-                }
-            }
-        }
+        logger.LogInformation("Database initialization completed after {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
     }
 }

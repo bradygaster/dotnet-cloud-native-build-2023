@@ -12,10 +12,13 @@
 
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Npgsql" Version="8.0.0-preview.2.23619.3" />
-        <PackageReference Include="Microsoft.Extensions.Resilience" Version="8.1.0" />
+		<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0-preview.2.23619.3" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Resilience" Version="8.1.0" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
-        <PackageReference Include="Nanorm.Npgsql" Version="0.1.2" />
         <PackageReference Include="Npgsql" Version="8.0.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>

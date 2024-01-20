@@ -1,11 +1,14 @@
+using Microsoft.EntityFrameworkCore;
 using Orders;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-builder.AddNpgsqlDataSource("ordersDb");
-builder.Services.AddHostedService<DatabaseInitializer>();
-builder.Services.AddSingleton<IOrdersDb, OrdersDb>();
+builder.AddNpgsqlDbContext<OrdersDbContext>("ordersdb", null,
+    optionsBuilder => optionsBuilder.UseNpgsql(npgsqlBuilder =>
+        npgsqlBuilder.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
+builder.Services.AddSingleton<DatabaseInitializer>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<DatabaseInitializer>());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

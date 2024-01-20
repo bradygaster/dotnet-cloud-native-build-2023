@@ -1,6 +1,6 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var ordersDb = builder.AddPostgres("ordersDb");
+var ordersDb = builder.AddPostgres("postgres").AddDatabase("ordersdb");
 
 var products = builder.AddProject<Projects.Products>("products");
 

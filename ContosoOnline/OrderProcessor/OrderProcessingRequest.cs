@@ -1,16 +1,10 @@
-﻿using System.Diagnostics;
-
-namespace OrderProcessor;
-
-public class OrderProcessingRequest(Instrumentation instrumentation, 
-                                    ILogger<OrderProcessingRequest> logger, 
+﻿public class OrderProcessingRequest(ILogger<OrderProcessingRequest> logger, 
                                     OrderServiceClient ordersClient, 
                                     ProductServiceClient productsClient)
 {
-    public async Task ProcessOrdersAsync(Activity? activity, CancellationToken stoppingToken)
+    public async Task ProcessOrdersAsync(CancellationToken stoppingToken)
     {
         var orders = await ordersClient.GetOrdersAsync(stoppingToken);
-        activity?.AddTag("order-count", orders.Count());
 
         // REVIEW: Should we do this concurrently?
         foreach (var order in orders)
@@ -33,12 +27,7 @@ public class OrderProcessingRequest(Instrumentation instrumentation,
 
     private async Task ProcessOrderAsync(Order order)
     {
-        using var orderActivity = instrumentation.ActivitySource.StartActivity("order-processor.process-order");
-
         logger.LogInformation("Checking inventory for Order {OrderId}", order.OrderId);
-
-        orderActivity?.AddTag("order-id", order.OrderId);
-        orderActivity?.AddTag("product-count", order.Cart.Length);
 
         bool canWeFulfillOrder = true;
         var itemTasks = new List<Task>();
@@ -66,11 +55,10 @@ public class OrderProcessingRequest(Instrumentation instrumentation,
 
         await Task.WhenAll(itemTasks);
 
-        orderActivity?.SetTag("can-fulfill-order", canWeFulfillOrder);
-
         if (canWeFulfillOrder)
         {
             var invTasks = new List<Task>();
+
             foreach (var cartItem in order.Cart)
             {
                 invTasks.Add(Task.Run(async () =>

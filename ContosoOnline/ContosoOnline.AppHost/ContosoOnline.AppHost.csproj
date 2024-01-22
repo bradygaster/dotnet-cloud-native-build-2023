@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting" Version="8.0.0-preview.2.23619.3" />
+    <PackageReference Include="Aspire.Npgsql" Version="8.0.0-preview.2.23619.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrderProcessor\OrderProcessor.csproj" />
+    <ProjectReference Include="..\Orders\Orders.csproj" />
+    <ProjectReference Include="..\Products\Products.csproj" />
+    <ProjectReference Include="..\Store\Store.csproj" />
+  </ItemGroup>
+
+</Project>

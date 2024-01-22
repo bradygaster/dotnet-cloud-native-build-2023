@@ -1,12 +1,20 @@
+using Microsoft.EntityFrameworkCore;
 using Orders;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddObservability("Orders", builder.Configuration);
-builder.Services.AddDatabase();
+
+builder.AddServiceDefaults();
+builder.AddNpgsqlDbContext<OrdersDbContext>("ordersdb", null,
+    optionsBuilder => optionsBuilder.UseNpgsql(npgsqlBuilder =>
+        npgsqlBuilder.MigrationsAssembly(typeof(Program).Assembly.GetName().Name)));
+builder.Services.AddSingleton<DatabaseInitializer>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<DatabaseInitializer>());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.MapGet("/", () => "Orders");
 
@@ -24,6 +32,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapOrdersApi();
-app.MapObservability();
 
 app.Run();

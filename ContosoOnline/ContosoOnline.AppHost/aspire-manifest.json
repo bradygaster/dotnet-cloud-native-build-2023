@@ -1,0 +1,84 @@
+{
+  "resources": {
+    "ordersdb": {
+      "type": "postgres.server.v0"
+    },
+    "products": {
+      "type": "project.v0",
+      "path": "../Products/Products.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http2"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http2"
+        }
+      }
+    },
+    "orders": {
+      "type": "project.v0",
+      "path": "../Orders/Orders.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "ConnectionStrings__ordersdb": "{ordersdb.connectionString}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http"
+        }
+      }
+    },
+    "store": {
+      "type": "project.v0",
+      "path": "../Store/Store.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "services__products__0": "{products.bindings.http.url}",
+        "services__products__1": "{products.bindings.https.url}",
+        "services__orders__0": "{orders.bindings.http.url}",
+        "services__orders__1": "{orders.bindings.https.url}"
+      },
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http"
+        },
+        "https": {
+          "scheme": "https",
+          "protocol": "tcp",
+          "transport": "http"
+        }
+      }
+    },
+    "orderprocessor": {
+      "type": "project.v0",
+      "path": "../OrderProcessor/OrderProcessor.csproj",
+      "env": {
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EXCEPTION_LOG_ATTRIBUTES": "true",
+        "OTEL_DOTNET_EXPERIMENTAL_OTLP_EMIT_EVENT_LOG_ATTRIBUTES": "true",
+        "services__orders__0": "{orders.bindings.http.url}",
+        "services__orders__1": "{orders.bindings.https.url}",
+        "services__products__0": "{products.bindings.http.url}",
+        "services__products__1": "{products.bindings.https.url}"
+      }
+    }
+  }
+}

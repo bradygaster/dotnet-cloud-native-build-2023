@@ -5,32 +5,15 @@ VisualStudioVersion = 17.6.33626.354
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders", "Orders\Orders.csproj", "{707DD638-D2BD-4EB9-AE3D-4FFBB846D294}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packaging", "Packaging", "{93F57020-1802-4E09-A317-0CC49947BE75}"
-	ProjectSection(SolutionItems) = preProject
-		..\docker-compose-deps.yml = ..\docker-compose-deps.yml
-		..\docker-compose.yml = ..\docker-compose.yml
-		..\NuGet.config = ..\NuGet.config
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Products", "Products\Products.csproj", "{6E7A43D5-5F93-49C3-A89F-31644350F18A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proxy", "Proxy\Proxy.csproj", "{B3ABF069-B464-4E91-89C6-C4697F90D16E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderProcessor", "OrderProcessor\OrderProcessor.csproj", "{F51C5A7B-3832-4BE3-9636-D5156E47E40C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Store", "Store\Store.csproj", "{0BDF7868-40E2-47FE-BD35-D661E069CAAD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Diagnostics", "Diagnostics\Diagnostics.csproj", "{3037C1F1-2FF4-4E89-955F-DD3917DA39B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContosoOnline.AppHost", "ContosoOnline.AppHost\ContosoOnline.AppHost.csproj", "{BA2FFA24-D295-43AF-B1A5-383885411F9A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{2DD38B4E-4407-4329-96D0-1999D1AB2BDD}"
-	ProjectSection(SolutionItems) = preProject
-		..\infra\main.bicep = ..\infra\main.bicep
-		..\infra\app\orderprocessor.bicep = ..\infra\app\orderprocessor.bicep
-		..\infra\app\orders.bicep = ..\infra\app\orders.bicep
-		..\infra\app\products.bicep = ..\infra\app\products.bicep
-		..\infra\app\proxy.bicep = ..\infra\app\proxy.bicep
-		..\infra\app\store.bicep = ..\infra\app\store.bicep
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContosoOnline.ServiceDefaults", "ContosoOnline.ServiceDefaults\ContosoOnline.ServiceDefaults.csproj", "{CB2DB17A-8F7F-49AF-BCBE-92036E3A8499}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +29,6 @@ Global
 		{6E7A43D5-5F93-49C3-A89F-31644350F18A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E7A43D5-5F93-49C3-A89F-31644350F18A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E7A43D5-5F93-49C3-A89F-31644350F18A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B3ABF069-B464-4E91-89C6-C4697F90D16E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3ABF069-B464-4E91-89C6-C4697F90D16E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B3ABF069-B464-4E91-89C6-C4697F90D16E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B3ABF069-B464-4E91-89C6-C4697F90D16E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F51C5A7B-3832-4BE3-9636-D5156E47E40C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F51C5A7B-3832-4BE3-9636-D5156E47E40C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F51C5A7B-3832-4BE3-9636-D5156E47E40C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -58,10 +37,14 @@ Global
 		{0BDF7868-40E2-47FE-BD35-D661E069CAAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0BDF7868-40E2-47FE-BD35-D661E069CAAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0BDF7868-40E2-47FE-BD35-D661E069CAAD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3037C1F1-2FF4-4E89-955F-DD3917DA39B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3037C1F1-2FF4-4E89-955F-DD3917DA39B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3037C1F1-2FF4-4E89-955F-DD3917DA39B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3037C1F1-2FF4-4E89-955F-DD3917DA39B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA2FFA24-D295-43AF-B1A5-383885411F9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA2FFA24-D295-43AF-B1A5-383885411F9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA2FFA24-D295-43AF-B1A5-383885411F9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA2FFA24-D295-43AF-B1A5-383885411F9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB2DB17A-8F7F-49AF-BCBE-92036E3A8499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB2DB17A-8F7F-49AF-BCBE-92036E3A8499}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB2DB17A-8F7F-49AF-BCBE-92036E3A8499}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB2DB17A-8F7F-49AF-BCBE-92036E3A8499}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

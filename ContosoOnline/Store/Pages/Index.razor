@@ -83,7 +83,7 @@ else
             _error = ex.ToString();
             _grpcWorking = false;
         }
-        
+
         _shouldRender = true;
     }
 
@@ -91,12 +91,12 @@ else
     {
         var reply = await _productsClient.GetProductsAsync(new Empty());
         var products = reply.Products.ToList();
-        foreach (var item in products)
+
+        _products.Clear();
+
+        foreach (var item in products.OrderBy(x => x.Name))
         {
-            if (!_products.Any(p => p.ProductId == item.ProductId))
-            {
-                _products.Add(item);
-            }
+            _products.Add(item);
         }
     }
 

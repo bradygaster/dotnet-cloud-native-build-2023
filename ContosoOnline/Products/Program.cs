@@ -2,15 +2,14 @@ using Products;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IProductService, FakeProductService>();
+builder.AddServiceDefaults();
 builder.Services.AddGrpc();
-builder.Services.AddObservability("Products", builder.Configuration);
+builder.Services.AddSingleton<IProductService, FakeProductService>();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Products");
-
 app.MapGrpcService<ProductsGrpcService>();
-app.MapObservability();
+
+app.MapDefaultEndpoints();
 
 app.Run();

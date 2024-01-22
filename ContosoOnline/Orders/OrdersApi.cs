@@ -8,11 +8,11 @@ public static class OrdersApi
     {
         var group = routes.MapGroup("/orders");
 
-        group.MapGet("/", async (IOrdersDb db) =>
+        group.MapGet("/", async (OrdersDbContext dbContext) =>
         {
-            var orders = (await db.GetUnshippedOrdersAsync()).Select(p => new Order(p.OrderedAt, p.OrderId)).ToList();
+            var orders = (dbContext.OrderItems.Where(x => x.HasShipped == false).ToList()).Select(p => new Order(p.OrderedAt, p.OrderId)).ToList();
 
-            var cartItems = (await db.GetCartItemsAsync()).ToList();
+            var cartItems = (dbContext.CartItems.ToList()).ToList();
 
             orders.ForEach(o => o.Cart =
                 cartItems.Where(c => c.OrderId == o.OrderId)
@@ -21,11 +21,19 @@ public static class OrdersApi
             return orders;
         });
 
-        group.MapPost("/", async Task<Results<BadRequest, Created<Order>>> (Order order, IOrdersDb db, CancellationToken ct) =>
+        group.MapPost("/", async Task<Results<BadRequest, Created<Order>>> (OrdersDbContext dbContext, Order order, CancellationToken ct) =>
         {
-            var createdOrder = await db.AddOrderAsync(order.OrderId, ct);
+            var newOrder = new OrderDatabaseRecord
+            {
+                OrderId = order.OrderId,
+                OrderedAt = DateTime.UtcNow,
+                HasShipped = false
+            };
 
-            if (createdOrder is null)
+            dbContext.OrderItems.Add(newOrder);
+            await dbContext.SaveChangesAsync(ct);
+
+            if (newOrder is null)
             {
                 return TypedResults.BadRequest();
             }
@@ -34,18 +42,34 @@ public static class OrdersApi
             {
                 foreach (var item in order.Cart)
                 {
-                    await db.AddCartItemAsync(order.OrderId, item.ProductId, item.Quantity, ct);
+                    var newCartItem = new CartItemDatabaseRecord
+                    {
+                        CartItemId = Guid.NewGuid(),
+                        OrderId = order.OrderId,
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity
+                    };
+
+                    dbContext.CartItems.Add(newCartItem);
+                    await dbContext.SaveChangesAsync(ct);
                 }
             }
 
-            return TypedResults.Created($"/orders", new Order(createdOrder.OrderedAt, createdOrder.OrderId));
+            return TypedResults.Created($"/orders", new Order(newOrder.OrderedAt, newOrder.OrderId));
         });
 
-        group.MapPut("/{orderId}", async Task<Results<NoContent, NotFound>> (Guid orderId, Order order, IOrdersDb db) =>
+        group.MapPut("/{orderId}", async Task<Results<NoContent, NotFound>> (OrdersDbContext dbContext, Guid orderId, Order order) =>
         {
-            return await db.MarkOrderShippedAsync(orderId)
-                ? TypedResults.NoContent()
-                : TypedResults.NotFound();
+            var b = dbContext.OrderItems.FirstOrDefault(x => x.OrderId == orderId);
+            if (b is not null)
+            {
+                b.HasShipped = true;
+                dbContext.Update(b);
+                await dbContext.SaveChangesAsync();
+                return TypedResults.NoContent();
+            }
+
+            return TypedResults.NotFound();
         });
 
         return group;

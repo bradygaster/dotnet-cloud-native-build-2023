@@ -1,6 +1,4 @@
-﻿namespace OrderProcessor;
-
-public class ProductServiceClient(ILogger<ProductServiceClient> logger, Products.Products.ProductsClient client)
+﻿public class ProductServiceClient(ILogger<ProductServiceClient> logger, Products.Products.ProductsClient client)
 {
     public async Task<bool> CanInventoryFulfill(string productId, int amount)
     {

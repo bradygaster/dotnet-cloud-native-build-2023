@@ -6,9 +6,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>true</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <SelfContained>True</SelfContained>
         <LangVersion>preview</LangVersion>
-      <UserSecretsId>ad065b74-0b55-4bb5-9321-225a9bf3ae30</UserSecretsId>
-  </PropertyGroup>
+        <UserSecretsId>ad065b74-0b55-4bb5-9321-225a9bf3ae30</UserSecretsId>
+    </PropertyGroup>
 
     <ItemGroup>
         <None Remove="Protos\products.proto" />
@@ -17,17 +18,21 @@
     <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
         <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.1.0" />
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"
+            Version="1.19.6" />
         <PackageReference Include="Microsoft.Bcl.TimeProvider" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Diagnostics.ExceptionSummarization" Version="8.1.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions"
+            Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.ExceptionSummarization"
+            Version="8.1.0" />
         <PackageReference Include="Microsoft.Extensions.AmbientMetadata.Application" Version="8.1.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ContosoOnline.ServiceDefaults\ContosoOnline.ServiceDefaults.csproj" />
+        <ProjectReference
+            Include="..\ContosoOnline.ServiceDefaults\ContosoOnline.ServiceDefaults.csproj" />
     </ItemGroup>
 
     <ItemGroup>

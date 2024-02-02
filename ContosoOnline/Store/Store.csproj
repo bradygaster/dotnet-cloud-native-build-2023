@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>8c1fa008-f58d-4e3c-87e1-4bd2b50b97eb</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <SelfContained>True</SelfContained>
         <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
@@ -17,11 +18,12 @@
         <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.1.0" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.60.0" />
         <PackageReference Include="MudBlazor" Version="6.12.0" />
-		<PackageReference Include="Grpc.Net.ClientFactory" />
+        <PackageReference Include="Grpc.Net.ClientFactory" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ContosoOnline.ServiceDefaults\ContosoOnline.ServiceDefaults.csproj" />
+        <ProjectReference
+            Include="..\ContosoOnline.ServiceDefaults\ContosoOnline.ServiceDefaults.csproj" />
     </ItemGroup>
 
     <ItemGroup>

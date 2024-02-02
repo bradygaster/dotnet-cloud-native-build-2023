@@ -8,6 +8,7 @@
         <UserSecretsId>8f201042-cefe-43d4-898a-b9458cdf5a87</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <LangVersion>preview</LangVersion>
+        <SelfContained>true</SelfContained>
     </PropertyGroup>
 
     <ItemGroup>
